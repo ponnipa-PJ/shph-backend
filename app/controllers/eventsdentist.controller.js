@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-    noti:req.body.noti,userId:req.body.userId,borderColor:req.body.borderColor,backgroundColor:req.body.backgroundColor,title:req.body.title,date:req.body.date,doctorId:req.body.doctorId,bookstatus:req.body.bookstatus,status:req.body.status,});
+    remark:req.body.remark, noti:req.body.noti,userId:req.body.userId,borderColor:req.body.borderColor,backgroundColor:req.body.backgroundColor,title:req.body.title,date:req.body.date,doctorId:req.body.doctorId,bookstatus:req.body.bookstatus,status:req.body.status,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -32,7 +32,20 @@ exports.book = (req, res) => {
     });
     };
     
-    
+    exports.geteventbydate = (req, res) => {
+        const date = req.query.date;
+        const datecurrent = req.query.datecurrent;
+        
+        Data.geteventbydate(date,datecurrent, (err, data) => {
+        if (err)
+        res.status(500).send({
+        message:
+        err.message || "Some error occurred while retrieving table."
+        });
+        else res.send(data);
+        });
+        };
+
     exports.getquebyuserid = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;
@@ -45,11 +58,48 @@ exports.book = (req, res) => {
         else res.send(data);
         });
         };
+        exports.deleteevent = (req, res) => {
+            const date = req.query.date;
+            const id = req.query.id;
+            Data.deleteevent(date,id, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
+        exports.geteventbydocanddate = (req, res) => {
+            const date = req.query.date;
+            const id = req.query.id;
+            Data.geteventbydocanddate(date,id, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
+        exports.geteventbyuseranddate = (req, res) => {
+            const date = req.query.date;
+            const id = req.query.id;
+            Data.geteventbyuseranddate(date,id, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
 
     exports.getdoctorbydate = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;
-        Data.getdoctorbydate(date,id, (err, data) => {
+        const doctor = req.query.doctor;
+        Data.getdoctorbydate(date,id,doctor, (err, data) => {
         if (err)
         res.status(500).send({
         message:

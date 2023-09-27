@@ -17,7 +17,88 @@ var corsOptions = {
     origin: "*"
 };
 
+// var link = 'http://localhost:8081'
+var link = 'https://api.shphQueue.ponnipa.in.th'
 
+setInterval(function(){ 
+    axios.get(link+'/api/notification/1')   
+    .then(response => {
+    //    console.log(response.data);
+       var noti = response.data
+       var t = response.data.time
+    //    console.log(t);
+       var time = t.split(':')
+       var d = new Date()
+       var hour = String((d.getHours()).toString().padStart(2, "0"));
+              var minute = String((d.getMinutes()).toString().padStart(2, "0"));
+              var second = String((d.getSeconds()).toString().padStart(2, "0"));
+              console.log(hour,minute,second);
+       if (hour == time[0] && minute == time[1] && second == time[2]) {
+        var day = (d.getDate()+1).toString().padStart(2, "0");
+              var month = (d.getMonth() + 1).toString().padStart(2, "0");
+              var year =   d.getFullYear()
+              var date = year+'-'+month+'-'+day
+
+              var daycurrent = (d.getDate()).toString().padStart(2, "0");
+              var monthcurrent = (d.getMonth()+1).toString().padStart(2, "0");
+              var yearcurrent =   d.getFullYear()
+              var datecurrent = yearcurrent+'-'+monthcurrent+'-'+daycurrent
+
+            //   console.log(date);
+              axios.get(link+'/api/events/geteventbydate?date='+date+'&&datecurrent='+datecurrent)   
+    .then(res => {
+        // console.log(res.data);
+        for (let r = 0; r < res.data.length; r++) {
+            var breaktime = new Date(res.data[r].date)
+        var header = breaktime.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }) + ' เวลา ' + timeformat(breaktime.toLocaleTimeString('th-TH'))
+// console.log(header);
+        var message = noti.message_chiropractor + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +header
+        // console.log(message);
+        axios.get(link+'/notify?message=' + message+'&&token=' + res.data[r].line_token).then( ()=> {
+        });
+        }
+        
+    });
+    
+              axios.get(link+'/api/eventsdentist/geteventbydate?date='+date+'&&datecurrent='+datecurrent)    
+    .then(res => {
+        console.log(res.data);
+        for (let r = 0; r < res.data.length; r++) {
+            var breaktimecurrent = new Date(res.data[r].date)
+        var headercurrent = breaktimecurrent.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }) + ' เวลา ' + timeformat(breaktimecurrent.toLocaleTimeString('th-TH'))
+// console.log(header);
+        var messagecurrent = noti.message_dentist + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +headercurrent
+        // console.log(message);
+        axios.get(link+'/notify?message=' + messagecurrent+'&&token=' + res.data[r].line_token).then( ()=> {
+        });
+        }
+        
+    });
+       }
+       
+              
+    
+     })   
+    .catch((error) => {
+       console.log('error ' + error);   
+    });
+
+}
+    ,1000) //logs hi every second
+
+
+    function timeformat(time) {
+        time = time.split(':')
+        return time[0] + '.' + time[1] + ' น.'
+      }
 // set port, listen for requests
 const PORT = process.env.PORT || 8081;
 app.use(cors(corsOptions));
@@ -52,7 +133,7 @@ app.get("/up", (req, res) => {
 });
 
 app.get("/notify", (req, res) => {
-    console.log(req.query.token);
+    // console.log(req.query.token);
     const url_line_notification = "https://notify-api.line.me/api/notify";
     request({
         method: 'POST',
@@ -175,6 +256,7 @@ require("./app/routes/doctors.routes")(app);
 require("./app/routes/queues.routes")(app);
 require("./app/routes/events.routes")(app);
 require("./app/routes/eventsdentist.routes")(app);
+require("./app/routes/notification.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

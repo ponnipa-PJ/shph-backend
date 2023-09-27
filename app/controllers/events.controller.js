@@ -58,6 +58,61 @@ exports.book = (req, res) => {
         else res.send(data);
         });
         };
+         
+        exports.geteventbyuseranddate = (req, res) => {
+            const date = req.query.date;
+            const id = req.query.id;
+            Data.geteventbyuseranddate(date,id, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
+
+            exports.geteventbydocanddate = (req, res) => {
+                const date = req.query.date;
+                const id = req.query.id;
+                Data.geteventbydocanddate(date,id, (err, data) => {
+                if (err)
+                res.status(500).send({
+                message:
+                err.message || "Some error occurred while retrieving table."
+                });
+                else res.send(data);
+                });
+                };
+                
+        exports.geteventbydate = (req, res) => {
+            const date = req.query.date;
+            const datecurrent = req.query.datecurrent;
+            
+            Data.geteventbydate(date,datecurrent, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
+            
+            
+            exports.deleteevent = (req, res) => {
+                const date = req.query.date;
+                const id = req.query.id;
+                Data.deleteevent(date,id, (err, data) => {
+                if (err)
+                res.status(500).send({
+                message:
+                err.message || "Some error occurred while retrieving table."
+                });
+                else res.send(data);
+                });
+                };
+
 exports.findAll = (req, res) => {
 const name = req.query.name;
 const id = req.query.id;
@@ -130,14 +185,4 @@ res.send([])
 });
 };
 
-exports.deleteAll = (req, res) => {
-Data.removeAll((err, data) => {
-if (err)
-res.status(500).send({
-message:
-err.message || "Some error occurred while removing all tutorials."
-});
-else res.send({ message: `All Datas was deleted successfully!` });
-});
-};
 
