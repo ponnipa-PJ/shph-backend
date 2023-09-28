@@ -16,7 +16,7 @@ Data.create = (newData, result) => {
 }
 
 Data.book = (name, id, result) => {
-    let query = `SELECT * FROM events WHERE status !=0  and bookstatus !=2`;
+    let query = `SELECT * FROM events WHERE status !=0  and bookstatus !=2 and date >= CURDATE()`;
     if (name) {
         query += ` and date LIKE '%${name}%'`;
     }
@@ -221,7 +221,7 @@ Data.deleteevent = (date, id, result) => {
     });
 };
 Data.getAll = (name, id, result) => {
-    let query = `SELECT * FROM events WHERE status !=0 and doctorId =${id}`;
+    let query = `SELECT * FROM events WHERE status !=0 and doctorId =${id} and date >= CURDATE()`;
     if (name) {
         query += ` and date LIKE '%${name}%'`;
     }

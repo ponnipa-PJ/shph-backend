@@ -15,7 +15,7 @@ result(null, { id: res.insertId, ...newData });
 }
 
 Data.book = (name,id, result) => {
-    let query = `SELECT * FROM eventsdentist WHERE status !=0  and bookstatus !=2`;
+    let query = `SELECT * FROM eventsdentist WHERE status !=0  and bookstatus !=2 and date >= CURDATE()`;
     if (name) {
     query += ` and date LIKE '%${name}%'`;
     }
@@ -199,7 +199,7 @@ if (doc.length > 0) {
         };
 
 Data.getAll = (name,id, result) => {
-let query = `SELECT * FROM eventsdentist WHERE status !=0 and doctorId = ${id}`;
+let query = `SELECT * FROM eventsdentist WHERE status !=0 and doctorId = ${id} and date >= CURDATE()`;
 if (name) {
 query += ` and date LIKE '%${name}%'`;
 }
