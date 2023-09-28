@@ -36,9 +36,7 @@ exports.book = (req, res) => {
     exports.getquebyuserid = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;
-        const doctorid = req.query.doctorid;
-        
-        Data.getquebyuserid(date,id,doctorid, (err, data) => {
+        Data.getquebyuserid(date,id, (err, data) => {
         if (err)
         res.status(500).send({
         message:
@@ -47,20 +45,7 @@ exports.book = (req, res) => {
         else res.send(data);
         });
         };
-        
-        exports.gettimebydoctoranddate = (req, res) => {
-            const date = req.query.date;
-            const id = req.query.id;
-            const userid = req.query.userid;
-            Data.gettimebydoctoranddate(date,id,userid, (err, data) => {
-            if (err)
-            res.status(500).send({
-            message:
-            err.message || "Some error occurred while retrieving table."
-            });
-            else res.send(data);
-            });
-            };
+
     exports.getdoctorbydate = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;

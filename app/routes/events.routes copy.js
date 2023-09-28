@@ -12,7 +12,6 @@ router.get("/geteventbyuseranddate", datas.geteventbyuseranddate);
 router.get("/geteventbydocanddate", datas.geteventbydocanddate);
 
 router.get("/book", datas.book);
-router.get("/gettimebydoctoranddate", datas.gettimebydoctoranddate);
 router.get("/getdoctorbydate", datas.getdoctorbydate);
 router.get("/getquebyuserid", datas.getquebyuserid);
 router.get("/:id", datas.findOne);
