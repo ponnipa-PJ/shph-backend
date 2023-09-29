@@ -22,7 +22,9 @@ else res.send(data);
 exports.book = (req, res) => {
     const name = req.query.name;
     const id = req.query.id;
-    Data.book(name,id, (err, data) => {
+    const shphId = req.query.shphId;
+    
+    Data.book(name,id,shphId, (err, data) => {
     if (err)
     res.status(500).send({
     message:
@@ -49,7 +51,8 @@ exports.book = (req, res) => {
     exports.getquebyuserid = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;
-        Data.getquebyuserid(date,id, (err, data) => {
+        const shphId = req.query.shphId;
+        Data.getquebyuserid(date,id,shphId, (err, data) => {
         if (err)
         res.status(500).send({
         message:
@@ -85,7 +88,8 @@ exports.book = (req, res) => {
         exports.geteventbyuseranddate = (req, res) => {
             const date = req.query.date;
             const id = req.query.id;
-            Data.geteventbyuseranddate(date,id, (err, data) => {
+            const shphId = req.query.shphId;
+            Data.geteventbyuseranddate(date,id,shphId, (err, data) => {
             if (err)
             res.status(500).send({
             message:
@@ -99,7 +103,8 @@ exports.book = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;
         const doctor = req.query.doctor;
-        Data.getdoctorbydate(date,id,doctor, (err, data) => {
+        const shphId = req.query.shphId;
+        Data.getdoctorbydate(date,id,doctor,shphId, (err, data) => {
         if (err)
         res.status(500).send({
         message:

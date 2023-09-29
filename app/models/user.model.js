@@ -21,6 +21,8 @@ const Case = function (cases) {
   this.districtsId = cases.districtsId;
   this.amphureId = cases.amphureId;
   this.provinceId = cases.provinceId;
+  this.shphId = cases.shphId;
+  
 };
 
 Case.create = (newUser, result) => {
@@ -40,6 +42,7 @@ Case.create = (newUser, result) => {
   districtsId : newUser.districtsId,
   amphureId : newUser.amphureId,
   provinceId : newUser.provinceId,
+  shphId : newUser.shphId,
   }];
   sql.query("INSERT INTO  users SET ?", news, (err, res) => {
     if (err) {
@@ -92,7 +95,7 @@ Case.getmenu = (id, result) => {
 };
 
 Case.findById = (id, result) => {
-  sql.query(`SELECT * FROM  users WHERE id  = '${id}'`, (err, res) => {
+  sql.query(`SELECT u.*,s.id as shphId FROM  users u left join shph s on u.shphId = s.id WHERE u.id  = '${id}'`, (err, res) => {
     if (err) {
       //console.log("error: ", err);
       result(err, null);
@@ -112,7 +115,7 @@ Case.findById = (id, result) => {
 
 Case.signin = (req, result) => {
   // console.log(req);
-    sql.query(`SELECT u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
+    sql.query(`SELECT u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname,u.shphId FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
       if (err) {
         // console.log("error: ", err);
         result(err, null);
@@ -135,7 +138,7 @@ Case.signin = (req, result) => {
                 line_token:res[0].line_token,
                 accessToken:token,
                 email:res[0].email,
-                line_token:res[0].line_token
+                shphId:res[0].shphId
               }
               result(null, data);
               return;
@@ -156,7 +159,7 @@ Case.signin = (req, result) => {
             line_token:res[0].line_token,
             accessToken:token,
             email:res[0].email,
-            line_token:res[0].line_token
+            shphId:res[0].shphId
           }
           result(null, data);
           return;
@@ -318,18 +321,21 @@ Case.getdatabyrole = (role, result) => {
   });
 };
 
-Case.getAll = (name, result) => {
+Case.getAll = (name,shphId, result) => {
   // let query = "SELECT * FROM report";
-  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id";
+  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token,s.name as shphname FROM users u join roles r on u.role_id = r.id join shph s on u.shphId = s.id";
   if (name) {
     query += ` and u.email = '${name}' and u.active = 1`;
+  }else if(shphId){
+    query += ` and u.shphId = '${shphId}' and u.active = 1 and u.role_id != 3`;
   }else{
     query += ` and u.active = 1`;
   
   }
+  // console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
-      //console.log("error: ", err);
+      console.log("error: ", err);
       result(null, err);
       return;
     }
@@ -361,8 +367,8 @@ Case.updateById = (id, cases, result) => {
     cases.password = bcrypt.hashSync(cases.password, 8)
   }
   sql.query(
-    "UPDATE  users SET firstname=?,lastname=?,email = ?,password = ? ,role_id = ?,line_token = ? ,phone = ?,number=?,moo=?,soi=?,provinceId=?,amphureId=?,districtsId=? WHERE id  = ?",
-    [cases.firstname,cases.lastname,cases.email,cases.password,cases.role_id ,cases.line_token,cases.phone,cases.number,cases.moo,cases.soi,cases.provinceId,cases.amphureId,cases.districtsId, id],
+    "UPDATE  users SET firstname=?,lastname=?,email = ?,password = ? ,role_id = ?,line_token = ? ,phone = ?,number=?,moo=?,soi=?,provinceId=?,amphureId=?,districtsId=?,shphId=? WHERE id  = ?",
+    [cases.firstname,cases.lastname,cases.email,cases.password,cases.role_id ,cases.line_token,cases.phone,cases.number,cases.moo,cases.soi,cases.provinceId,cases.amphureId,cases.districtsId,cases.shphId, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

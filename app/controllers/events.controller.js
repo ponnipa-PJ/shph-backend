@@ -22,7 +22,9 @@ else res.send(data);
 exports.book = (req, res) => {
     const name = req.query.name;
     const id = req.query.id;
-    Data.book(name,id, (err, data) => {
+    const shphId = req.query.shphId;
+    
+    Data.book(name,id,shphId, (err, data) => {
     if (err)
     res.status(500).send({
     message:

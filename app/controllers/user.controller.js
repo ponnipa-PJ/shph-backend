@@ -28,7 +28,9 @@ exports.create = (req, res) => {
         soi:req.body.soi,
         districtsId:req.body.districtsId,
         provinceId:req.body.provinceId,
-        amphureId:req.body.amphureId
+        amphureId:req.body.amphureId,
+        shphId:req.body.shphId,
+        
     });
     console.log(cases);
     // Save Tutorial in the database
@@ -142,8 +144,8 @@ exports.getdatabyrole = (req, res) => {
 // Retrieve all Tutorials from the database (with condition).
 exports.findAll = (req, res) => {
     const name = req.query.name;
-
-    Case.getAll(name, (err, data) => {
+    const shphId = req.query.shphId;
+    Case.getAll(name,shphId, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

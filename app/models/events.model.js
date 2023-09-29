@@ -15,8 +15,8 @@ Data.create = (newData, result) => {
     });
 }
 
-Data.book = (name, id, result) => {
-    let query = `SELECT d.*,e.date FROM events e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE()`;
+Data.book = (name, id,shphId, result) => {
+    let query = `SELECT d.*,e.date FROM events e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and d.shphId = ${shphId}`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }
@@ -265,9 +265,9 @@ Data.deleteevent = (date, id, result) => {
     });
 };
 Data.getAll = (name, id, result) => {
-    let query = `SELECT * FROM events WHERE status !=0 and doctorId =${id} and date >= CURDATE()`;
+    let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE()`;
     if (name) {
-        query += ` and date LIKE '%${name}%'`;
+        query += ` and e.date LIKE '%${name}%'`;
     }
 
     sql.query(query, (err, res) => {
@@ -304,7 +304,7 @@ Data.getAll = (name, id, result) => {
     });
 };
 Data.findById = (id, result) => {
-    sql.query(`SELECT e.*,d.firstname,d.lastname,u.firstname as userfirst,u.lastname as userlast FROM events e left join users d on e.doctorId = d.id left join users u on e.userId = u.id WHERE e.id = ${id}`, (err, res) => {
+    sql.query(`SELECT e.*,d.firstname,d.lastname,u.firstname as userfirst,u.lastname as userlast,u.line_token FROM events e left join users d on e.doctorId = d.id left join users u on e.userId = u.id WHERE e.id = ${id}`, (err, res) => {
         if (err) {
             result(err, null);
             return;

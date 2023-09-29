@@ -257,6 +257,9 @@ require("./app/routes/queues.routes")(app);
 require("./app/routes/events.routes")(app);
 require("./app/routes/eventsdentist.routes")(app);
 require("./app/routes/notification.routes")(app);
+require("./app/routes/shph.routes")(app);
+require("./app/routes/historymasseuse.routes")(app);
+require("./app/routes/historydentist.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);
