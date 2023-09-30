@@ -265,13 +265,14 @@ Data.deleteevent = (date, id, result) => {
     });
 };
 Data.getAll = (name, id, result) => {
+    var list =[]
     let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE()`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }
-
+console.log(query);
     sql.query(query, (err, res) => {
-        // for (let r = 0; r < res.length; r++) {
+        for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
         //     var d = new Date(res[r].date)
         //     console.log(d);
@@ -294,8 +295,13 @@ Data.getAll = (name, id, result) => {
         //     // date = "2023-09-25T06:00:00+07:00"
         //     date = year+'-'+month+'-'+day+'T'+hour+':'+minute+':'+second+'+07:00'
         // }
-        // res[r].date =  date
+        // if (res[r].userId == null) {
+        //     list.push(res[r])
+        // }else{
+        //     let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE()`;
+
         // }
+        }
         if (err) {
             result(null, err);
             return;

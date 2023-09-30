@@ -160,6 +160,37 @@ app.get("/notify", (req, res) => {
     });
 });
 
+app.get("/notifyconfirm", (req, res) => {
+    // console.log(req.query.token);
+    const url_line_notification = "https://notify-api.line.me/api/notify";
+    request({
+        method: 'POST',
+        uri: url_line_notification,
+        header: {
+            'Content-Type': 'multipart/form-data',
+        },
+        auth: {
+            bearer: req.query.token,
+        },
+        form: {
+            message: req.query.message,
+            stickerPackageId:11538,
+            stickerId:51626494,
+
+        },
+    }, (err, httpResponse, body) => {
+        var data = ''
+        if (err) {
+            console.log(err)
+            data = err
+        } else {
+            console.log(body)
+            data = body
+        }
+        res.json(body)
+    });
+});
+
 app.get("/gettoken", (req, res) => {
     const url = 'https://notify-bot.line.me/oauth/token'
     // var valclient_id= String(process.env.client_id);
