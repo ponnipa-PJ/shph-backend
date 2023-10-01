@@ -1,10 +1,11 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.name=datas.name;this.status=datas.status;};
+this.name=datas.name;this.status=datas.status;this.createdBy=datas.createdBy};
 Data.create = (newData, result) => {
 sql.query("INSERT INTO shph SET ?", newData, (err, res) => {
 if (err) {
+    console.log(err);
 result(err, null);
 return;
 }
@@ -15,7 +16,7 @@ result(null, { id: res.insertId, ...newData });
 Data.getAll = (name, result) => {
 let query = "SELECT * FROM shph";
 if (name) {
-query += ` WHERE name LIKE '%${name}%'`;
+query += ` WHERE status = ${name}`;
 }
 sql.query(query, (err, res) => {
 if (err) {
@@ -56,7 +57,7 @@ return;
 };
 Data.remove = (id, result) => {
 sql.query(
-"DELETE FROM shph  WHERE id = ?",id, (err, res) => {
+"UPDATE shph set status = 0 WHERE id = ?",id, (err, res) => {
 if (err) {
 result(null, err);
 return;

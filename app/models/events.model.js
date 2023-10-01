@@ -1,10 +1,10 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.noti = datas.noti; this.userId = datas.userId; this.borderColor = datas.borderColor; this.backgroundColor = datas.backgroundColor; this.title = datas.title; this.date = datas.date; this.doctorId = datas.doctorId; this.bookstatus = datas.bookstatus; this.status = datas.status;
+    this.confirmstatus = datas.confirmstatus;this.noti = datas.noti; this.userId = datas.userId; this.borderColor = datas.borderColor; this.backgroundColor = datas.backgroundColor; this.title = datas.title; this.date = datas.date; this.doctorId = datas.doctorId; this.bookstatus = datas.bookstatus; this.status = datas.status;
 };
 Data.create = (newData, result) => {
-    console.log(newData);
+    // console.log(newData);
     sql.query("INSERT INTO events SET ?", newData, (err, res) => {
         if (err) {
             console.log(err);
@@ -21,7 +21,7 @@ Data.book = (name, id,shphId, result) => {
         query += ` and e.date LIKE '%${name}%'`;
     }
     query += ' Group by e.doctorId order by e.date'
-    console.log(query);
+    // console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             res[r].title = res[r].firstname + ' '+ res[r].lastname
@@ -195,6 +195,10 @@ Data.geteventbydocanddate = (date, id, result) => {
         result(null, res[0]);
     });
 };
+function timeformat(time) {
+    time = time.split(':')
+    return time[0] + '.' + time[1] + ' น.'
+  }
 
 Data.geteventbyuseranddate = (date, id, result) => {
     let query = `SELECT * FROM events WHERE status !=0 and userId =${id}`;
@@ -211,17 +215,51 @@ Data.geteventbyuseranddate = (date, id, result) => {
     });
 };
 Data.geteventbydate = (date,datecurrent, result) => {
+    var list =[]
     let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
     if (date) {
-        query += ` and date LIKE '%${date}%' or date LIKE '%${datecurrent}%'`;
+        query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%') group by e.userId`;
     }
 // console.log(query);
     sql.query(query, (err, res) => {
+        for (let r = 0; r < res.length; r++) {
+            var breaktime = new Date(res[r].date)
+            var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+              var monthtoday = (breaktime.getMonth()+1).toString().padStart(2, "0");
+              var yeartoday =   breaktime.getFullYear()
+              var datetoday = yeartoday+'-'+monthtoday+'-'+daytoday
+
+            let peruser = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.userId = ${res[r].userId} and (e.date LIKE '%${datetoday}%') order by e.date asc`;
+            sql.query(peruser, (err, user) => {
+                var t = ''
+                for (let u = 0; u < user.length; u++) {
+                    var breaktime = new Date(user[u].date)
+                    if (u == 0) {
+t += timeformat(breaktime.toLocaleTimeString('th-TH'))
+                    }
+                    if (user.length > 1 && user.length == u+1) {
+                        t+= ' - '
+                    }
+                     if (u+1 == user.length) {
+                        t += timeformat(breaktime.toLocaleTimeString('th-TH'))
+                    }
+                    // console.log(u,user.length);
+                    
+                    
+                }
+                res[r].time = t
+                // console.log(t);
+                list.push(res[r])
+            });
+        }
         if (err) {
             result(null, err);
             return;
         }
-        result(null, res);
+        setTimeout(() => {
+
+            result(null, list);
+        }, 500);
     });
 };
 
@@ -261,6 +299,7 @@ Data.deleteevent = (date, id, result) => {
             result(null, err);
             return;
         }
+        
         result(null, res);
     });
 };
@@ -272,7 +311,11 @@ Data.getAll = (name, id, result) => {
     }
 console.log(query);
     sql.query(query, (err, res) => {
+        console.log(res);
         for (let r = 0; r < res.length; r++) {
+            if (res[r].date == '2023-10-01T09:00:00+07:00') {
+                res[r].end = '2023-10-01T10:00:00+07:00'
+            }
         //     console.log(res[r].date);
         //     var d = new Date(res[r].date)
         //     console.log(d);
@@ -323,6 +366,23 @@ Data.findById = (id, result) => {
     });
 };
 
+
+Data.updateconfirm = (id, datas, result) => {
+    sql.query(
+        "UPDATE events SET confirmstatus = ? WHERE id = ?",
+        [datas.confirmstatus, id], (err, res) => {
+            if (err) {
+                console.log(err);
+                result(null, err);
+                return;
+            }
+            if (res.affectedRows == 0) {
+                result({ kind: "not_found" }, null);
+                return;
+            }; result(null, { id: id, ...datas });
+        }
+    );
+};
 
 Data.updateuser = (id, datas, result) => {
     sql.query(

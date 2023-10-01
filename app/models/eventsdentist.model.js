@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
+    this.confirmstatus=datas.confirmstatus;this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
 Data.create = (newData, result) => {
     console.log(newData);
 sql.query("INSERT INTO eventsdentist SET ?", newData, (err, res) => {
@@ -55,7 +55,7 @@ if (doc.length > 0) {
     Data.geteventbydate = (date,datecurrent, result) => {
         let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM eventsdentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
         if (date) {
-            query += ` and date LIKE '%${date}%' or date LIKE '%${datecurrent}%'`;
+            query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%')`;
         }
     // console.log(query);
         sql.query(query, (err, res) => {
@@ -163,7 +163,7 @@ if (doc.length > 0) {
         let query = `SELECT d.* FROM eventsdentist e  LEFT JOIN users d on e.doctorId = d.id WHERE e.status !=0 and(e.userId is null or e.userId =${id} ) and d.shphId = ${shphId}`;
         if (date) {
         var date = date.replace(' ','+')
-        query += ` and e.date = '${date}'`;
+        query += ` and e.date = '${date}' GROUP BY e.doctorId`;
         }
         query += strdoc
         console.log(query);
@@ -254,6 +254,22 @@ result({ kind: "not_found" }, null);
 });
 };
 
+Data.updateconfirm = (id, datas, result) => {
+    sql.query(
+        "UPDATE eventsdentist SET confirmstatus = ? WHERE id = ?",
+        [datas.confirmstatus, id], (err, res) => {
+            if (err) {
+                console.log(err);
+                result(null, err);
+                return;
+            }
+            if (res.affectedRows == 0) {
+                result({ kind: "not_found" }, null);
+                return;
+            }; result(null, { id: id, ...datas });
+        }
+    );
+};
 
 Data.updateuser = (id, datas, result) => {
     sql.query(

@@ -8,7 +8,6 @@ const dotenv = require('dotenv');
 dotenv.config();
 const axios = require('axios');
 require('dotenv').config();
-
 const fs = require('fs');
 
 const app = express();
@@ -17,8 +16,8 @@ var corsOptions = {
     origin: "*"
 };
 
-// var link = 'http://localhost:8081'
-var link = 'https://api.shphQueue.ponnipa.in.th'
+var link = 'http://localhost:8081'
+// var link = 'https://api.shphQueue.ponnipa.in.th'
 
 setInterval(function(){ 
     axios.get(link+'/api/notification/1')   
@@ -33,6 +32,7 @@ setInterval(function(){
               var minute = String((d.getMinutes()).toString().padStart(2, "0"));
               var second = String((d.getSeconds()).toString().padStart(2, "0"));
               console.log(hour,minute,second);
+            //   
        if (hour == time[0] && minute == time[1] && second == time[2]) {
         var day = (d.getDate()+1).toString().padStart(2, "0");
               var month = (d.getMonth() + 1).toString().padStart(2, "0");
@@ -50,13 +50,22 @@ setInterval(function(){
         // console.log(res.data);
         for (let r = 0; r < res.data.length; r++) {
             var breaktime = new Date(res.data[r].date)
+            var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+              var monthtoday = (breaktime.getMonth()+1).toString().padStart(2, "0");
+              var yeartoday =   breaktime.getFullYear()
+              var datetoday = yeartoday+'-'+monthtoday+'-'+daytoday
+
         var header = breaktime.toLocaleDateString('th-TH', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
-          }) + ' เวลา ' + timeformat(breaktime.toLocaleTimeString('th-TH'))
-// console.log(header);
-        var message = noti.message_chiropractor + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +header
+          }) + ' เวลา ' + res.data[r].time
+console.log(datecurrent,datetoday);
+var linkconfirm = ''
+if (datecurrent == datetoday) {
+    linkconfirm = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้'+ link+'/Confirmmasseuse?id='+res.data[r].id
+}
+        var message = noti.message_chiropractor + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +header + ' '+ linkconfirm
         // console.log(message);
         axios.get(link+'/notify?message=' + message+'&&token=' + res.data[r].line_token).then( ()=> {
         });
@@ -66,7 +75,7 @@ setInterval(function(){
     
               axios.get(link+'/api/eventsdentist/geteventbydate?date='+date+'&&datecurrent='+datecurrent)    
     .then(res => {
-        console.log(res.data);
+        // console.log(res.data);
         for (let r = 0; r < res.data.length; r++) {
             var breaktimecurrent = new Date(res.data[r].date)
         var headercurrent = breaktimecurrent.toLocaleDateString('th-TH', {
@@ -105,8 +114,8 @@ app.use(cors(corsOptions));
 app.use(fileUpload());
 
 var bodyParser = require('body-parser');
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb' }));
@@ -160,35 +169,125 @@ app.get("/notify", (req, res) => {
     });
 });
 
+app.post('/webhook', (req, res) => {
+    let reply_token = req.body.events[0].replyToken
+    reply(reply_token)
+    res.sendStatus(200)
+})
+
+function reply(reply_token) {
+    let headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer {EeJEoF3HFj/MWOAurYRMn9BgERfQA4d5oW7J9wtP4uSNXBvYda4w4OzgM7to1kaOEWF6bbgVBTm+Gc2yBPT08tJaygqIO1zTZYgrBgpaY/3BXMf2qcKDH5kjAwN3XgPfegrlkg0PT1t3ZvsPx8jgIAdB04t89/1O/w1cDnyilFU=}'
+    }
+    let body = JSON.stringify({
+        replyToken: reply_token,
+        messages: [{
+            type: 'text',
+            text: 'Hello'
+        },
+        {
+            type: 'text',
+            text: 'How are you?'
+        }]
+    })
+    request.post({
+        url: 'https://api.line.me/v2/bot/message/reply',
+        headers: headers,
+        body: body
+    }, (err, res, body) => {
+        console.log('status = ' + res.statusCode);
+    });
+}
+
 app.get("/notifyconfirm", (req, res) => {
     // console.log(req.query.token);
-    const url_line_notification = "https://notify-api.line.me/api/notify";
-    request({
-        method: 'POST',
-        uri: url_line_notification,
-        header: {
-            'Content-Type': 'multipart/form-data',
-        },
-        auth: {
-            bearer: req.query.token,
-        },
-        form: {
-            message: req.query.message,
-            stickerPackageId:11538,
-            stickerId:51626494,
+    const url = "https://api.line.me/v2/bot/message/push";
+    axios.post(url, {
+        to: req.query.token,
+        message: [
+            {
+              "type": "flex",
+              "altText": "This is a Flex Message",
+              "contents": {
+                "type": "bubble",
+                "body": {
+                  "type": "box",
+                  "layout": "horizontal",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": "Hello,"
+                    },
+                    {
+                      "type": "text",
+                      "text": "World!"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+    }, {
+        headers: { 'content-type': 'application/json' ,
+        Authorization: 'Bearer EeJEoF3HFj/MWOAurYRMn9BgERfQA4d5oW7J9wtP4uSNXBvYda4w4OzgM7to1kaOEWF6bbgVBTm+Gc2yBPT08tJaygqIO1zTZYgrBgpaY/3BXMf2qcKDH5kjAwN3XgPfegrlkg0PT1t3ZvsPx8jgIAdB04t89/1O/w1cDnyilFU='},
+        // data: JSON.stringify(jsonData),
+    }).then(response => {
+        // console.log(response)
+        res.json(response.data)
+    })
+        .catch(error => {
+            console.log(error.response)
+        });
+        
+    // const url_line_notification = "https://api.line.me/v2/bot/message/push";
+    // request({
+    //     method: 'POST',
+    //     uri: url_line_notification,
+    //     header: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     auth: {
+    //         bearer: "EeJEoF3HFj/MWOAurYRMn9BgERfQA4d5oW7J9wtP4uSNXBvYda4w4OzgM7to1kaOEWF6bbgVBTm+Gc2yBPT08tJaygqIO1zTZYgrBgpaY/3BXMf2qcKDH5kjAwN3XgPfegrlkg0PT1t3ZvsPx8jgIAdB04t89/1O/w1cDnyilFU=",
+    //     },
+    //     form: {
+    //         to: req.query.token,
+    //         message: [
+    //             {
+    //               "type": "flex",
+    //               "altText": "This is a Flex Message",
+    //               "contents": {
+    //                 "type": "bubble",
+    //                 "body": {
+    //                   "type": "box",
+    //                   "layout": "horizontal",
+    //                   "contents": [
+    //                     {
+    //                       "type": "text",
+    //                       "text": "Hello,"
+    //                     },
+    //                     {
+    //                       "type": "text",
+    //                       "text": "World!"
+    //                     }
+    //                   ]
+    //                 }
+    //               }
+    //             }
+    //           ]
 
-        },
-    }, (err, httpResponse, body) => {
-        var data = ''
-        if (err) {
-            console.log(err)
-            data = err
-        } else {
-            console.log(body)
-            data = body
-        }
-        res.json(body)
-    });
+    //     },
+    // }, (err, httpResponse, body) => {
+    //     var data = ''
+    //     if (err) {
+    //         console.log(err)
+    //         data = err
+    //     } else {
+    //         console.log(body)
+    //         data = body
+    //     }
+    //     res.json(body)
+    // });
 });
 
 app.get("/gettoken", (req, res) => {
@@ -208,6 +307,20 @@ client_secret:'jjabdUGaLBeOkdDE8sexPwLr8hw5N0fuDFQtGEXPNyD',
     }).then(response => {
         // console.log(response)
         res.json(response.data.access_token)
+    })
+        .catch(error => {
+            console.log(error.response)
+        });
+});
+
+app.get("/getuserid", (req, res) => {
+    const url = 'https://api.line.me/v2/profile'
+    // var valclient_id= String(process.env.client_id);
+    //     var valclient_secret= String(process.env.client_secret);
+    axios.get(url, {
+        headers: { Authorization: `Bearer k1ms49te0Uc8m56bAdvstnkSb5Wx5nTa29CW8n96pCN` }}).then(response => {
+        // console.log(response)
+        res.json(response.data)
     })
         .catch(error => {
             console.log(error.response)
