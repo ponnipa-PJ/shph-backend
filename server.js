@@ -16,8 +16,8 @@ var corsOptions = {
     origin: "*"
 };
 
-var link = 'http://localhost:8081'
-// var link = 'https://api.shphQueue.ponnipa.in.th'
+// var link = 'http://localhost:8081'
+var link = 'https://api.shphQueue.ponnipa.in.th'
 
 setInterval(function(){ 
     axios.get(link+'/api/notification/1')   
@@ -60,7 +60,7 @@ setInterval(function(){
             month: 'long',
             day: 'numeric',
           }) + ' เวลา ' + res.data[r].time
-console.log(datecurrent,datetoday);
+// console.log(datecurrent,datetoday);
 var linkconfirm = ''
 if (datecurrent == datetoday) {
     linkconfirm = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้'+ link+'/Confirmmasseuse?id='+res.data[r].id
@@ -78,12 +78,21 @@ if (datecurrent == datetoday) {
         // console.log(res.data);
         for (let r = 0; r < res.data.length; r++) {
             var breaktimecurrent = new Date(res.data[r].date)
+            var daydentist = (breaktimecurrent.getDate()).toString().padStart(2, "0");
+              var monthdentist = (breaktimecurrent.getMonth()+1).toString().padStart(2, "0");
+              var yeardentist =   breaktimecurrent.getFullYear()
+              var datedentist = yeardentist+'-'+monthdentist+'-'+daydentist
         var headercurrent = breaktimecurrent.toLocaleDateString('th-TH', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           }) + ' เวลา ' + timeformat(breaktimecurrent.toLocaleTimeString('th-TH'))
 // console.log(header);
+var linkconfirmden = ''
+if (datecurrent == datedentist) {
+    linkconfirmden = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้'+ link+'/Confirmdentist?id='+res.data[r].id
+}
+
         var messagecurrent = noti.message_dentist + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +headercurrent
         // console.log(message);
         axios.get(link+'/notify?message=' + messagecurrent+'&&token=' + res.data[r].line_token).then( ()=> {

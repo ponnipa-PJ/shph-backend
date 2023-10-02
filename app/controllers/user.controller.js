@@ -130,8 +130,8 @@ exports.getRole = (req, res) => {
 // Retrieve all Tutorials from the database (with condition).
 exports.getdatabyrole = (req, res) => {
     const role = req.query.role;
-
-    Case.getdatabyrole(role, (err, data) => {
+    const shphId = req.query.shphId;
+    Case.getdatabyrole(role,shphId, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

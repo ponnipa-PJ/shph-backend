@@ -303,11 +303,14 @@ Case.getRole = (name, result) => {
   });
 };
 
-Case.getdatabyrole = (role, result) => {
+Case.getdatabyrole = (role,shphId, result) => {
   // let query = "SELECT * FROM report";
   let query = "SELECT * FROM users u";
   if (role) {
-    query += ` WHERE u.role_id = ${role}`;
+    query += ` WHERE u.role_id = ${role} and u.firstname is not null`;
+  }
+  if (shphId) {
+    query += ` and u.shphId = ${shphId}`;
   }
   sql.query(query, (err, res) => {
     if (err) {
@@ -323,15 +326,16 @@ Case.getdatabyrole = (role, result) => {
 
 Case.getAll = (name,shphId, result) => {
   // let query = "SELECT * FROM report";
-  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token,s.name as shphname FROM users u join roles r on u.role_id = r.id join shph s on u.shphId = s.id";
+  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token,s.name as shphname ,s.id as shphId FROM users u ";
   if (name) {
     query += ` and u.email = '${name}' and u.active = 1`;
   }else if(shphId){
-    query += ` and u.shphId = '${shphId}' and u.active = 1 and u.role_id != 3`;
+    query += ` join roles r on u.role_id = r.id join shph s on u.shphId = s.id and u.shphId = '${shphId}' and u.role_id != 3 and u.active = 1`;
   }else{
-    query += ` and u.active = 1`;
+    query += ` join roles r on u.role_id = r.id left join shph s on u.shphId = s.id and u.active = 1`;
   
   }
+  query += ` order by r.no`;
   // console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
@@ -390,7 +394,7 @@ Case.updateById = (id, cases, result) => {
 
 
 Case.remove = (id, result) => {
-  sql.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
+  sql.query("UPDATE users set active = 0 WHERE id = ?", id, (err, res) => {
     if (err) {
       //console.log("error: ", err);
       result(null, err);

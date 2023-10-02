@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.confirmstatus=datas.confirmstatus;this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
+    this.createdBy=datas.createdBy;this.confirmstatus=datas.confirmstatus;this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
 Data.create = (newData, result) => {
     console.log(newData);
 sql.query("INSERT INTO eventsdentist SET ?", newData, (err, res) => {
