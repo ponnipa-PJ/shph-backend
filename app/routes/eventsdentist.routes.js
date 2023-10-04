@@ -8,6 +8,7 @@ router.get("/deleteevent", datas.deleteevent);
 
 router.get("/", datas.findAll);
 router.get("/geteventbydate", datas.geteventbydate);
+router.get("/createcolumn", datas.createcolumn);
 
 router.get("/book", datas.book);
 router.get("/getdoctorbydate", datas.getdoctorbydate);

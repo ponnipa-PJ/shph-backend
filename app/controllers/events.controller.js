@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-    createdBy:req.body.createdBy,confirmstatus:req.body.confirmstatus,noti:req.body.noti,userId:req.body.userId,borderColor:req.body.borderColor,backgroundColor:req.body.backgroundColor,title:req.body.title,date:req.body.date,doctorId:req.body.doctorId,bookstatus:req.body.bookstatus,status:req.body.status,});
+    shphId:req.body.shphId,createdBy:req.body.createdBy,confirmstatus:req.body.confirmstatus,noti:req.body.noti,userId:req.body.userId,borderColor:req.body.borderColor,backgroundColor:req.body.backgroundColor,title:req.body.title,date:req.body.date,doctorId:req.body.doctorId,bookstatus:req.body.bookstatus,status:req.body.status,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -75,7 +75,18 @@ exports.book = (req, res) => {
         else res.send(data);
         });
         };
-         
+           
+        exports.createsql = (req, res) => {
+            const name = req.query.name;
+            Data.createsql(name, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
         exports.geteventbyuseranddate = (req, res) => {
             const date = req.query.date;
             const id = req.query.id;
@@ -120,7 +131,8 @@ exports.book = (req, res) => {
             exports.deleteevent = (req, res) => {
                 const date = req.query.date;
                 const id = req.query.id;
-                Data.deleteevent(date,id, (err, data) => {
+                const shphId = req.query.shphId;
+                Data.deleteevent(date,id,shphId, (err, data) => {
                 if (err)
                 res.status(500).send({
                 message:
@@ -133,7 +145,8 @@ exports.book = (req, res) => {
 exports.findAll = (req, res) => {
 const name = req.query.name;
 const id = req.query.id;
-Data.getAll(name,id, (err, data) => {
+const shphId = req.query.shphId;
+Data.getAll(name,id,shphId, (err, data) => {
 if (err)
 res.status(500).send({
 message:

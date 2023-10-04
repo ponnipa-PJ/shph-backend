@@ -16,107 +16,107 @@ var corsOptions = {
     origin: "*"
 };
 
-// var link = 'http://localhost:8081'
-var link = 'https://api.shphQueue.ponnipa.in.th'
+var link = 'http://localhost:8081'
+// var link = 'https://api.shphQueue.ponnipa.in.th'
 
-setInterval(function(){ 
-    axios.get(link+'/api/notification/1')   
-    .then(response => {
-    //    console.log(response.data);
-       var noti = response.data
-       var t = response.data.time
-    //    console.log(t);
-       var time = t.split(':')
-       var d = new Date()
-       var hour = String((d.getHours()).toString().padStart(2, "0"));
-              var minute = String((d.getMinutes()).toString().padStart(2, "0"));
-              var second = String((d.getSeconds()).toString().padStart(2, "0"));
-              console.log(hour,minute,second);
+setInterval(function () {
+    axios.get(link + '/api/notification/1')
+        .then(response => {
+            //    console.log(response.data);
+            var noti = response.data
+            var t = response.data.time
+            //    console.log(t);
+            var time = t.split(':')
+            var d = new Date()
+            var hour = String((d.getHours()).toString().padStart(2, "0"));
+            var minute = String((d.getMinutes()).toString().padStart(2, "0"));
+            var second = String((d.getSeconds()).toString().padStart(2, "0"));
+            // console.log(hour, minute, second);
             //   
-       if (hour == time[0] && minute == time[1] && second == time[2]) {
-        var day = (d.getDate()+1).toString().padStart(2, "0");
-              var month = (d.getMonth() + 1).toString().padStart(2, "0");
-              var year =   d.getFullYear()
-              var date = year+'-'+month+'-'+day
+            if (hour == time[0] && minute == time[1] && second == time[2]) {
+                var day = (d.getDate() + 1).toString().padStart(2, "0");
+                var month = (d.getMonth() + 1).toString().padStart(2, "0");
+                var year = d.getFullYear()
+                var date = year + '-' + month + '-' + day
 
-              var daycurrent = (d.getDate()).toString().padStart(2, "0");
-              var monthcurrent = (d.getMonth()+1).toString().padStart(2, "0");
-              var yearcurrent =   d.getFullYear()
-              var datecurrent = yearcurrent+'-'+monthcurrent+'-'+daycurrent
+                var daycurrent = (d.getDate()).toString().padStart(2, "0");
+                var monthcurrent = (d.getMonth() + 1).toString().padStart(2, "0");
+                var yearcurrent = d.getFullYear()
+                var datecurrent = yearcurrent + '-' + monthcurrent + '-' + daycurrent
 
-            //   console.log(date);
-              axios.get(link+'/api/events/geteventbydate?date='+date+'&&datecurrent='+datecurrent)   
-    .then(res => {
-        // console.log(res.data);
-        for (let r = 0; r < res.data.length; r++) {
-            var breaktime = new Date(res.data[r].date)
-            var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
-              var monthtoday = (breaktime.getMonth()+1).toString().padStart(2, "0");
-              var yeartoday =   breaktime.getFullYear()
-              var datetoday = yeartoday+'-'+monthtoday+'-'+daytoday
+                //   console.log(date);
+                axios.get(link + '/api/events/geteventbydate?date=' + date + '&&datecurrent=' + datecurrent)
+                    .then(res => {
+                        // console.log(res.data);
+                        for (let r = 0; r < res.data.length; r++) {
+                            var breaktime = new Date(res.data[r].date)
+                            var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+                            var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+                            var yeartoday = breaktime.getFullYear()
+                            var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
 
-        var header = breaktime.toLocaleDateString('th-TH', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          }) + ' เวลา ' + res.data[r].time
-// console.log(datecurrent,datetoday);
-var linkconfirm = ''
-if (datecurrent == datetoday) {
-    linkconfirm = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้'+ link+'/Confirmmasseuse?id='+res.data[r].id
-}
-        var message = noti.message_chiropractor + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +header + ' '+ linkconfirm
-        // console.log(message);
-        axios.get(link+'/notify?message=' + message+'&&token=' + res.data[r].line_token).then( ()=> {
+                            var header = breaktime.toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            }) + ' เวลา ' + res.data[r].time
+                            // console.log(datecurrent,datetoday);
+                            var linkconfirm = ''
+                            if (datecurrent == datetoday) {
+                                linkconfirm = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้' + link + '/Confirmmasseuse?id=' + res.data[r].id
+                            }
+                            var message = noti.message_chiropractor + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ' + linkconfirm
+                            // console.log(message);
+                            axios.get(link + '/notify?message=' + message + '&&token=' + res.data[r].line_token).then(() => {
+                            });
+                        }
+
+                    });
+
+                axios.get(link + '/api/eventsdentist/geteventbydate?date=' + date + '&&datecurrent=' + datecurrent)
+                    .then(res => {
+                        // console.log(res.data);
+                        for (let r = 0; r < res.data.length; r++) {
+                            var breaktimecurrent = new Date(res.data[r].date)
+                            var daydentist = (breaktimecurrent.getDate()).toString().padStart(2, "0");
+                            var monthdentist = (breaktimecurrent.getMonth() + 1).toString().padStart(2, "0");
+                            var yeardentist = breaktimecurrent.getFullYear()
+                            var datedentist = yeardentist + '-' + monthdentist + '-' + daydentist
+                            var headercurrent = breaktimecurrent.toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            }) + ' เวลา ' + timeformat(breaktimecurrent.toLocaleTimeString('th-TH'))
+                            // console.log(header);
+                            var linkconfirmden = ''
+                            if (datecurrent == datedentist) {
+                                linkconfirmden = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้' + link + '/Confirmdentist?id=' + res.data[r].id
+                            }
+
+                            var messagecurrent = noti.message_dentist + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + headercurrent
+                            // console.log(message);
+                            axios.get(link + '/notify?message=' + messagecurrent + '&&token=' + res.data[r].line_token).then(() => {
+                            });
+                        }
+
+                    });
+            }
+
+
+
+        })
+        .catch((error) => {
+            console.log('error ' + error);
         });
-        }
-        
-    });
-    
-              axios.get(link+'/api/eventsdentist/geteventbydate?date='+date+'&&datecurrent='+datecurrent)    
-    .then(res => {
-        // console.log(res.data);
-        for (let r = 0; r < res.data.length; r++) {
-            var breaktimecurrent = new Date(res.data[r].date)
-            var daydentist = (breaktimecurrent.getDate()).toString().padStart(2, "0");
-              var monthdentist = (breaktimecurrent.getMonth()+1).toString().padStart(2, "0");
-              var yeardentist =   breaktimecurrent.getFullYear()
-              var datedentist = yeardentist+'-'+monthdentist+'-'+daydentist
-        var headercurrent = breaktimecurrent.toLocaleDateString('th-TH', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          }) + ' เวลา ' + timeformat(breaktimecurrent.toLocaleTimeString('th-TH'))
-// console.log(header);
-var linkconfirmden = ''
-if (datecurrent == datedentist) {
-    linkconfirmden = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้'+ link+'/Confirmdentist?id='+res.data[r].id
-}
-
-        var messagecurrent = noti.message_dentist + ' หมอ'+ res.data[r].firstname +' '+ res.data[r].lastname+' วันที่ ' +headercurrent
-        // console.log(message);
-        axios.get(link+'/notify?message=' + messagecurrent+'&&token=' + res.data[r].line_token).then( ()=> {
-        });
-        }
-        
-    });
-       }
-       
-              
-    
-     })   
-    .catch((error) => {
-       console.log('error ' + error);   
-    });
 
 }
-    ,1000) //logs hi every second
+    , 1000) //logs hi every second
 
 
-    function timeformat(time) {
-        time = time.split(':')
-        return time[0] + '.' + time[1] + ' น.'
-      }
+function timeformat(time) {
+    time = time.split(':')
+    return time[0] + '.' + time[1] + ' น.'
+}
 // set port, listen for requests
 const PORT = process.env.PORT || 8081;
 app.use(cors(corsOptions));
@@ -216,30 +216,32 @@ app.get("/notifyconfirm", (req, res) => {
         to: req.query.token,
         message: [
             {
-              "type": "flex",
-              "altText": "This is a Flex Message",
-              "contents": {
-                "type": "bubble",
-                "body": {
-                  "type": "box",
-                  "layout": "horizontal",
-                  "contents": [
-                    {
-                      "type": "text",
-                      "text": "Hello,"
-                    },
-                    {
-                      "type": "text",
-                      "text": "World!"
+                "type": "flex",
+                "altText": "This is a Flex Message",
+                "contents": {
+                    "type": "bubble",
+                    "body": {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": "Hello,"
+                            },
+                            {
+                                "type": "text",
+                                "text": "World!"
+                            }
+                        ]
                     }
-                  ]
                 }
-              }
             }
-          ],
+        ],
     }, {
-        headers: { 'content-type': 'application/json' ,
-        Authorization: 'Bearer EeJEoF3HFj/MWOAurYRMn9BgERfQA4d5oW7J9wtP4uSNXBvYda4w4OzgM7to1kaOEWF6bbgVBTm+Gc2yBPT08tJaygqIO1zTZYgrBgpaY/3BXMf2qcKDH5kjAwN3XgPfegrlkg0PT1t3ZvsPx8jgIAdB04t89/1O/w1cDnyilFU='},
+        headers: {
+            'content-type': 'application/json',
+            Authorization: 'Bearer EeJEoF3HFj/MWOAurYRMn9BgERfQA4d5oW7J9wtP4uSNXBvYda4w4OzgM7to1kaOEWF6bbgVBTm+Gc2yBPT08tJaygqIO1zTZYgrBgpaY/3BXMf2qcKDH5kjAwN3XgPfegrlkg0PT1t3ZvsPx8jgIAdB04t89/1O/w1cDnyilFU='
+        },
         // data: JSON.stringify(jsonData),
     }).then(response => {
         // console.log(response)
@@ -248,7 +250,7 @@ app.get("/notifyconfirm", (req, res) => {
         .catch(error => {
             console.log(error.response)
         });
-        
+
     // const url_line_notification = "https://api.line.me/v2/bot/message/push";
     // request({
     //     method: 'POST',
@@ -308,8 +310,8 @@ app.get("/gettoken", (req, res) => {
         code: req.query.code,
         redirect_uri: 'https://shphqueue.ponnipa.in.th/line',
         // redirect_uri: 'http://localhost:8082/line',
-        client_id:'do6mzoSxLMNnOTXkr7USva',
-client_secret:'jjabdUGaLBeOkdDE8sexPwLr8hw5N0fuDFQtGEXPNyD',
+        client_id: 'do6mzoSxLMNnOTXkr7USva',
+        client_secret: 'jjabdUGaLBeOkdDE8sexPwLr8hw5N0fuDFQtGEXPNyD',
     }, {
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         // data: JSON.stringify(jsonData),
@@ -327,7 +329,8 @@ app.get("/getuserid", (req, res) => {
     // var valclient_id= String(process.env.client_id);
     //     var valclient_secret= String(process.env.client_secret);
     axios.get(url, {
-        headers: { Authorization: `Bearer k1ms49te0Uc8m56bAdvstnkSb5Wx5nTa29CW8n96pCN` }}).then(response => {
+        headers: { Authorization: `Bearer k1ms49te0Uc8m56bAdvstnkSb5Wx5nTa29CW8n96pCN` }
+    }).then(response => {
         // console.log(response)
         res.json(response.data)
     })
@@ -413,6 +416,9 @@ require("./app/routes/notification.routes")(app);
 require("./app/routes/shph.routes")(app);
 require("./app/routes/historymasseuse.routes")(app);
 require("./app/routes/historydentist.routes")(app);
+require("./app/routes/map_history_user_dentist.routes")(app);
+require("./app/routes/masseusetype.routes")(app);
+require("./app/routes/doctorshph.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

@@ -12,6 +12,8 @@ module.exports = app => {
   // Retrieve all cases
   router.get("/", cases.findAll);
 
+  router.get("/getdoctor", cases.getdoctor);
+  
   router.get("/getdatabyrole", cases.getdatabyrole);
 
 

@@ -30,6 +30,7 @@ exports.create = (req, res) => {
         provinceId:req.body.provinceId,
         amphureId:req.body.amphureId,
         shphId:req.body.shphId,
+        UID:req.body.UID,
         
     });
     console.log(cases);
@@ -132,6 +133,18 @@ exports.getdatabyrole = (req, res) => {
     const role = req.query.role;
     const shphId = req.query.shphId;
     Case.getdatabyrole(role,shphId, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving tutorials."
+            });
+        else res.send(data);
+    });
+};
+
+exports.getdoctor = (req, res) => {
+    const name = req.query.name;
+    Case.getdoctor(name, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

@@ -22,7 +22,7 @@ const Case = function (cases) {
   this.amphureId = cases.amphureId;
   this.provinceId = cases.provinceId;
   this.shphId = cases.shphId;
-  
+  this.UID = cases.UID;
 };
 
 Case.create = (newUser, result) => {
@@ -43,6 +43,7 @@ Case.create = (newUser, result) => {
   amphureId : newUser.amphureId,
   provinceId : newUser.provinceId,
   shphId : newUser.shphId,
+  UID : newUser.UID,
   }];
   sql.query("INSERT INTO  users SET ?", news, (err, res) => {
     if (err) {
@@ -115,7 +116,7 @@ Case.findById = (id, result) => {
 
 Case.signin = (req, result) => {
   // console.log(req);
-    sql.query(`SELECT u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname,u.shphId FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
+    sql.query(`SELECT u.UID,u.type,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname,u.shphId FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
       if (err) {
         // console.log("error: ", err);
         result(err, null);
@@ -138,7 +139,9 @@ Case.signin = (req, result) => {
                 line_token:res[0].line_token,
                 accessToken:token,
                 email:res[0].email,
-                shphId:res[0].shphId
+                shphId:res[0].shphId,
+                UID:res[0].UID,
+                type:res[0].type
               }
               result(null, data);
               return;
@@ -315,6 +318,25 @@ Case.getdatabyrole = (role,shphId, result) => {
   sql.query(query, (err, res) => {
     if (err) {
       //console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    //console.log("case_types: ", res);
+    result(null, res);
+  });
+};
+
+Case.getdoctor = (name,result) => {
+  // let query = "SELECT * FROM report";
+  let query = "SELECT * FROM users u WHERE u.role_id = 1 and u.role_id = 1 and u.active = 1 and u.firstname is not null";
+  if (name) {
+    query += ` and u.email = '${name}' and u.active = 1`;
+  }
+  // console.log(query);
+  sql.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
       result(null, err);
       return;
     }

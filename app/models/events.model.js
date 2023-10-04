@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.createdBy = datas.createdBy;this.confirmstatus = datas.confirmstatus;this.noti = datas.noti; this.userId = datas.userId; this.borderColor = datas.borderColor; this.backgroundColor = datas.backgroundColor; this.title = datas.title; this.date = datas.date; this.doctorId = datas.doctorId; this.bookstatus = datas.bookstatus; this.status = datas.status;
+    this.shphId = datas.shphId;this.createdBy = datas.createdBy;this.confirmstatus = datas.confirmstatus;this.noti = datas.noti; this.userId = datas.userId; this.borderColor = datas.borderColor; this.backgroundColor = datas.backgroundColor; this.title = datas.title; this.date = datas.date; this.doctorId = datas.doctorId; this.bookstatus = datas.bookstatus; this.status = datas.status;
 };
 Data.create = (newData, result) => {
     // console.log(newData);
@@ -199,6 +199,18 @@ function timeformat(time) {
     time = time.split(':')
     return time[0] + '.' + time[1] + ' น.'
   }
+  
+  Data.createsql = (name, result) => {
+    let query = name
+    console.log(query);
+    sql.query(query, (err, res) => {
+        if (err) {
+            result(null, err);
+            return;
+        }
+        result(null, res);
+    });
+};
 
 Data.geteventbyuseranddate = (date, id, result) => {
     let query = `SELECT * FROM events WHERE status !=0 and userId =${id}`;
@@ -263,8 +275,8 @@ t += timeformat(breaktime.toLocaleTimeString('th-TH'))
     });
 };
 
-Data.deleteevent = (date, id, result) => {
-    let query = `DELETE FROM events WHERE doctorId =${id} and bookstatus != 0`;
+Data.deleteevent = (date, id,shphId, result) => {
+    let query = `DELETE FROM events WHERE doctorId =${id} and bookstatus != 0 and e.shphId = ${shphId}`;
     if (date) {
         query += ` and date LIKE '%${date}%'`;
     }
@@ -303,9 +315,9 @@ Data.deleteevent = (date, id, result) => {
         result(null, res);
     });
 };
-Data.getAll = (name, id, result) => {
+Data.getAll = (name, id,shphId, result) => {
     var list =[]
-    let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE()`;
+    let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE() and e.shphId = ${shphId}`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }

@@ -1,5 +1,5 @@
 module.exports = app => {
-const datas = require("../controllers/shph.controller.js");
+const datas = require("../controllers/doctorshph.controller.js");
 
 var router = require("express").Router();
 
@@ -17,5 +17,5 @@ router.delete("/:id", datas.delete);
 
 router.delete("/", datas.deleteAll);
 
-app.use("/api/shph", router);
+app.use("/api/doctorshph", router);
 };

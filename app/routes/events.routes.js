@@ -10,6 +10,7 @@ router.get("/", datas.findAll);
 router.get("/geteventbydate", datas.geteventbydate);
 router.get("/geteventbyuseranddate", datas.geteventbyuseranddate);
 router.get("/geteventbydocanddate", datas.geteventbydocanddate);
+router.get("/createsql", datas.createsql);
 
 router.get("/book", datas.book);
 router.get("/gettimebydoctoranddate", datas.gettimebydoctoranddate);

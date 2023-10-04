@@ -1,4 +1,4 @@
-const Data = require("../models/shph.model.js");
+const Data = require("../models/doctorshph.model.js");
 
 exports.create = (req, res) => {
 if (!req.body) {
@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-name:req.body.name,status:req.body.status,createdBy:req.body.createdBy});
+docrtorId:req.body.docrtorId,shphId:req.body.shphId,status:req.body.status,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -20,8 +20,9 @@ else res.send(data);
 };
 
 exports.getdoctorandshphmasseuse = (req, res) => {
-    const name = req.query.name;
-    Data.getdoctorandshphmasseuse(name, (err, data) => {
+    const roleId = req.query.roleId;
+    const userId = req.query.userId;
+    Data.getdoctorandshphmasseuse(roleId,userId, (err, data) => {
     if (err)
     res.status(500).send({
     message:

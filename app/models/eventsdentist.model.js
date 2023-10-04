@@ -51,6 +51,19 @@ if (doc.length > 0) {
     }, 500);
     });
     };
+    
+    Data.createcolumn = (name, result) => {
+        console.log(name);
+        let query = `ALTER TABLE history_user_dentist ADD ID${name} varchar(255) NULL`;
+    console.log(query);
+        sql.query(query, (err, res) => {
+            if (err) {
+                result(null, err);
+                return;
+            }
+            result(null, res);
+        });
+    };
 
     Data.geteventbydate = (date,datecurrent, result) => {
         let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM eventsdentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;

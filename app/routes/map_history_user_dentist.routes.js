@@ -1,5 +1,5 @@
 module.exports = app => {
-const datas = require("../controllers/shph.controller.js");
+const datas = require("../controllers/map_history_user_dentist.controller.js");
 
 var router = require("express").Router();
 
@@ -7,15 +7,17 @@ router.post("/", datas.create);
 
 router.get("/", datas.findAll);
 
-router.get("/getdoctorandshphmasseuse", datas.getdoctorandshphmasseuse);
-
 router.get("/:id", datas.findOne);
 
 router.put("/:id", datas.update);
+
+router.put("/updatestatus/:id", datas.updatestatus);
+
+router.put("/updateno/:id", datas.updateno);
 
 router.delete("/:id", datas.delete);
 
 router.delete("/", datas.deleteAll);
 
-app.use("/api/shph", router);
+app.use("/api/map_history_user_dentist", router);
 };
