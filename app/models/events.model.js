@@ -14,6 +14,19 @@ Data.create = (newData, result) => {
         result(null, { id: res.insertId, ...newData });
     });
 }
+Data.createcolumn = (name, result) => {
+    console.log(name);
+    let query = `ALTER TABLE history_user_masseuse ADD ID${name} varchar(255) NULL`;
+console.log(query);
+    sql.query(query, (err, res) => {
+        if (err) {
+            result(null, err);
+            return;
+        }
+        result(null, res);
+    });
+};
+
 
 Data.book = (name, id,shphId, result) => {
     let query = `SELECT d.*,e.date FROM events e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and d.shphId = ${shphId}`;
@@ -57,7 +70,7 @@ Data.book = (name, id,shphId, result) => {
 
 Data.getquebyuserid = (date, id,doctorid,shphId, result) => {
     var list = []
-    let query = `SELECT e.id as event_id,e.eventId as eventIdlist,h.* FROM map_events e LEFT JOIN users u on e.userId = u.id join history_user_dentist h on e.id = h.eventId WHERE e.status =1 and e.userId =${id} and e.doctorId =${doctorid} and e.date = '${date}'`;
+    let query = `SELECT e.id as event_id,e.eventId as eventIdlist,h.* FROM map_events e LEFT JOIN users u on e.userId = u.id join history_user_masseuse h on e.id = h.eventId WHERE e.status =1 and e.userId =${id} and e.doctorId =${doctorid} and e.date = '${date}'`;
     // let query = `SELECT e.*,u.firstname,u.lastname FROM events e LEFT JOIN users u on e.doctorId = u.id WHERE e.status !=0 and e.userId =${id} and e.doctorId =${doctorid} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง'`;
     // if (date) {
     //     var date = date.replace(' ', '+')
