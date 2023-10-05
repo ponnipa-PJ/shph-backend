@@ -55,13 +55,14 @@ Data.book = (name, id,shphId, result) => {
 };
 
 
-Data.getquebyuserid = (date, id,doctorid, result) => {
+Data.getquebyuserid = (date, id,doctorid,shphId, result) => {
     var list = []
-    let query = `SELECT e.*,u.firstname,u.lastname FROM events e LEFT JOIN users u on e.doctorId = u.id WHERE e.status !=0 and e.userId =${id} and e.doctorId =${doctorid} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง'`;
-    if (date) {
-        var date = date.replace(' ', '+')
-        query += ` and e.date LIKE '%${date}%'`;
-    }
+    let query = `SELECT e.id as event_id,e.eventId as eventIdlist,h.* FROM map_events e LEFT JOIN users u on e.userId = u.id join history_user_dentist h on e.id = h.eventId WHERE e.status =1 and e.userId =${id} and e.doctorId =${doctorid} and e.date = '${date}'`;
+    // let query = `SELECT e.*,u.firstname,u.lastname FROM events e LEFT JOIN users u on e.doctorId = u.id WHERE e.status !=0 and e.userId =${id} and e.doctorId =${doctorid} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง'`;
+    // if (date) {
+    //     var date = date.replace(' ', '+')
+    //     query += ` and e.date LIKE '%${date}%'`;
+    // }
     console.log(query, 'df');
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
@@ -94,12 +95,12 @@ Data.getquebyuserid = (date, id,doctorid, result) => {
             result(null, err);
             return;
         }
-        result(null, list);
+        result(null, res);
     });
 };
 
-Data.gettimebydoctoranddate = (date, id,userid, result) => {
-    let query = `SELECT e.*,u.firstname,u.lastname FROM events e join users u on u.id = e.doctorId WHERE e.status !=0 and(e.userId is null or e.userId =${userid} ) and e.doctorId =${id} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE()`;
+Data.gettimebydoctoranddate = (date, id,userid,shphId, result) => {
+    let query = `SELECT e.*,u.firstname,u.lastname FROM events e join users u on u.id = e.doctorId WHERE e.status !=0 and(e.userId is null or e.userId =${userid} ) and e.doctorId =${id} and e.shphId = ${shphId} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE()`;
     if (date) {
         // var date = date.replace(' ', '+')
         query += ` and e.date LIKE '%${date}%' order by e.date`;
@@ -217,7 +218,7 @@ Data.geteventbyuseranddate = (date, id, result) => {
     if (date) {
         query += ` and date LIKE '%${date}%' and date != '${date}'`;
     }
-
+console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);

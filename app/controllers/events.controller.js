@@ -39,8 +39,8 @@ exports.book = (req, res) => {
         const date = req.query.date;
         const id = req.query.id;
         const doctorid = req.query.doctorid;
-        
-        Data.getquebyuserid(date,id,doctorid, (err, data) => {
+        const shphId = req.query.shphId;
+        Data.getquebyuserid(date,id,doctorid,shphId, (err, data) => {
         if (err)
         res.status(500).send({
         message:
@@ -54,7 +54,8 @@ exports.book = (req, res) => {
             const date = req.query.date;
             const id = req.query.id;
             const userid = req.query.userid;
-            Data.gettimebydoctoranddate(date,id,userid, (err, data) => {
+            const shphId = req.query.shphId;
+            Data.gettimebydoctoranddate(date,id,userid,shphId, (err, data) => {
             if (err)
             res.status(500).send({
             message:

@@ -1,9 +1,18 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.name=datas.name;};
+this.date=datas.date;this.shphId=datas.shphId;this.eventId=datas.eventId;this.userId=datas.userId;this.createdBy=datas.createdBy;this.doctorId=datas.doctorId;};
 Data.create = (newData, result) => {
-sql.query("INSERT INTO roles SET ?", newData, (err, res) => {
+    console.log(newData.eventId);
+    var data = {
+        date:newData.date,
+                    shphId:newData.shphId,
+                    eventId:JSON.stringify(newData.eventId),
+                    userId:newData.userId,
+                    createdBy:newData.createdBy,
+    }
+    console.log(data);
+sql.query("INSERT INTO map_events SET ?", data, (err, res) => {
 if (err) {
 result(err, null);
 return;
@@ -13,7 +22,7 @@ result(null, { id: res.insertId, ...newData });
 }
 
 Data.getAll = (name, result) => {
-let query = "SELECT * FROM roles order by no";
+let query = "SELECT * FROM map_events";
 if (name) {
 query += ` WHERE name LIKE '%${name}%'`;
 }
@@ -26,7 +35,7 @@ result(null, res);
 });
 };
 Data.findById = (id, result) => {
-sql.query(`SELECT * FROM roles WHERE id = ${id}`, (err, res) => {
+sql.query(`SELECT * FROM map_events WHERE id = ${id}`, (err, res) => {
 if (err) {
 result(err, null);
 return;
@@ -41,8 +50,8 @@ result({ kind: "not_found" }, null);
 
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE roles SET name = ? WHERE id = ?",
-[datas.name,id],(err, res) => {
+"UPDATE map_events SET date = ?,shphId = ?,eventId = ?,userId = ?,createdBy = ? WHERE id = ?",
+[datas.date,datas.shphId,datas.eventId,datas.userId,datas.createdBy,id],(err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -56,7 +65,7 @@ return;
 };
 Data.remove = (id, result) => {
 sql.query(
-"DELETE FROM roles  WHERE id = ?",id, (err, res) => {
+"DELETE FROM map_events  WHERE id = ?",id, (err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -70,7 +79,7 @@ result(null, res);
 };
 
 Data.removeAll = result => {
-sql.query("DELETE FROM roles", (err, res) => {
+sql.query("DELETE FROM map_events", (err, res) => {
 if (err) {
 result(null, err);
 return;
