@@ -39,10 +39,43 @@ result({ kind: "not_found" }, null);
 });
 };
 
+Data.updateno = (id, datas, result) => {
+    sql.query(
+        "UPDATE map_history_doctor_masseuse SET no = ? WHERE id = ?",
+        [datas.no, id], (err, res) => {
+            if (err) {
+                result(null, err);
+                return;
+            }
+            if (res.affectedRows == 0) {
+                result({ kind: "not_found" }, null);
+                return;
+            }; result(null, { id: id, ...datas });
+        }
+    );
+};
+
+Data.updatestatus = (id, datas, result) => {
+    // console.log(datas);
+    sql.query(
+        "UPDATE map_history_doctor_masseuse SET status = ? WHERE id = ?",
+        [datas.status, id], (err, res) => {
+            if (err) {
+                result(null, err);
+                return;
+            }
+            if (res.affectedRows == 0) {
+                result({ kind: "not_found" }, null);
+                return;
+            }; result(null, { id: id, ...datas });
+        }
+    );
+};
+
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE map_history_doctor_masseuse SET historyuserdentistId = ?,name = ?,status = ?,no = ? WHERE id = ?",
-[datas.historyuserdentistId,datas.name,datas.status,datas.no,id],(err, res) => {
+"UPDATE map_history_doctor_masseuse SET historyuserdentistId = ?,name = ? WHERE id = ?",
+[datas.historyuserdentistId,datas.name,id],(err, res) => {
 if (err) {
 result(null, err);
 return;

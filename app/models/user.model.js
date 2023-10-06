@@ -329,11 +329,11 @@ Case.getdatabyrole = (role,shphId, result) => {
 
 Case.getdoctor = (name,result) => {
   // let query = "SELECT * FROM report";
-  let query = "SELECT * FROM users u WHERE u.role_id = 1 and u.role_id = 1 and u.active = 1 and u.firstname is not null";
+  let query = "SELECT * FROM users u WHERE (u.role_id = 1 or u.role_id = 4 or u.role_id = 7) and u.active = 1 and u.firstname is not null";
   if (name) {
     query += ` and u.email = '${name}' and u.active = 1`;
   }
-  // console.log(query);
+  console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -363,17 +363,20 @@ Case.searchUID = (uid, result) => {
   });
 };
 
-Case.getAll = (name,shphId, result) => {
+Case.getAll = (name,roleId, result) => {
   // let query = "SELECT * FROM report";
-  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token,s.name as shphname FROM users u ";
+  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id";
   if (name) {
     query += ` and u.email = '${name}' and u.active = 1`;
-  }else{
-    query += ` join roles r on u.role_id = r.id left join shph s on u.shphId = s.id and u.active = 1`;
-  
   }
+  if (roleId == 1) {
+    query +=  ` where u.role_id = 7`
+  }
+  // if (roleId == 3 || roleId == 5) {
+  //   query +=  ` where u.role_id = 7`
+  // }
   query += ` order by r.no`;
-  // console.log(query);
+  console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);

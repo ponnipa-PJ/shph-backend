@@ -170,8 +170,8 @@ exports.searchUID = (req, res) => {
 // Retrieve all Tutorials from the database (with condition).
 exports.findAll = (req, res) => {
     const name = req.query.name;
-    const shphId = req.query.shphId;
-    Case.getAll(name,shphId, (err, data) => {
+    const roleId = req.query.roleId;
+    Case.getAll(name,roleId, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

@@ -56,7 +56,7 @@ Data.updateno = (id, datas, result) => {
 };
 
 Data.updatestatus = (id, datas, result) => {
-    console.log(datas);
+    // console.log(datas);
     sql.query(
         "UPDATE map_history_user_masseuse SET status = ? WHERE id = ?",
         [datas.status, id], (err, res) => {
