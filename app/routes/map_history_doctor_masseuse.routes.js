@@ -1,13 +1,11 @@
 module.exports = app => {
-const datas = require("../controllers/map_events.controller.js");
+const datas = require("../controllers/map_history_doctor_masseuse.controller.js");
 
 var router = require("express").Router();
 
 router.post("/", datas.create);
 
 router.get("/", datas.findAll);
-
-router.get("/geteventbycreatedBy", datas.geteventbycreatedBy);
 
 router.get("/:id", datas.findOne);
 
@@ -17,5 +15,5 @@ router.delete("/:id", datas.delete);
 
 router.delete("/", datas.deleteAll);
 
-app.use("/api/map_events", router);
+app.use("/api/map_history_doctor_masseuse", router);
 };

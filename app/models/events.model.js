@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.shphId = datas.shphId;this.createdBy = datas.createdBy;this.confirmstatus = datas.confirmstatus;this.noti = datas.noti; this.userId = datas.userId; this.borderColor = datas.borderColor; this.backgroundColor = datas.backgroundColor; this.title = datas.title; this.date = datas.date; this.doctorId = datas.doctorId; this.bookstatus = datas.bookstatus; this.status = datas.status;
+    this.shphId = datas.shphId; this.createdBy = datas.createdBy; this.confirmstatus = datas.confirmstatus; this.noti = datas.noti; this.userId = datas.userId; this.borderColor = datas.borderColor; this.backgroundColor = datas.backgroundColor; this.title = datas.title; this.date = datas.date; this.doctorId = datas.doctorId; this.bookstatus = datas.bookstatus; this.status = datas.status;
 };
 Data.create = (newData, result) => {
     // console.log(newData);
@@ -17,7 +17,7 @@ Data.create = (newData, result) => {
 Data.createcolumn = (name, result) => {
     console.log(name);
     let query = `ALTER TABLE history_user_masseuse ADD ID${name} varchar(255) NULL`;
-console.log(query);
+    console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);
@@ -28,34 +28,34 @@ console.log(query);
 };
 
 
-Data.book = (name, id,shphId, result) => {
-    let query = `SELECT d.*,e.date FROM events e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and d.shphId = ${shphId}`;
+Data.book = (name, id, shphId, result) => {
+    let query = `SELECT e.id,d.id as docid, d.firstname,d.lastname,e.date FROM events e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus =2 and e.date >= CURDATE() and e.shphId = ${shphId}`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }
-    query += ' Group by e.doctorId order by e.date'
-    // console.log(query);
+    // query += ' Group by e.doctorId order by e.date'
+    console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
-            res[r].title = res[r].firstname + ' '+ res[r].lastname
-        //     if (res[r].title != 'พักเทียง') {
-        //     let query = `SELECT * FROM events WHERE userId = ${id} and date = '${res[r].date}'`;
-        //     // console.log(query);
-            
-                
-            
-        //     sql.query(query, (err, doc) => {
-        //         if (doc.length > 0) {
-        //             res[r] = doc[0]
-        //         }else{
-        //             res[r].bookstatus = 1
-        //             res[r].userId = null
-        //             res[r].remark = null
-        //             res[r].title = 'ว่าง'
-        //         }
-        //     })
-    //     }
-    }
+            res[r].title = res[r].firstname + ' ' + res[r].lastname
+            //     if (res[r].title != 'พักเทียง') {
+            //     let query = `SELECT * FROM events WHERE userId = ${id} and date = '${res[r].date}'`;
+            //     // console.log(query);
+
+
+
+            //     sql.query(query, (err, doc) => {
+            //         if (doc.length > 0) {
+            //             res[r] = doc[0]
+            //         }else{
+            //             res[r].bookstatus = 1
+            //             res[r].userId = null
+            //             res[r].remark = null
+            //             res[r].title = 'ว่าง'
+            //         }
+            //     })
+            //     }
+        }
         if (err) {
             result(null, err);
             return;
@@ -68,7 +68,7 @@ Data.book = (name, id,shphId, result) => {
 };
 
 
-Data.getquebyuserid = (date, id,doctorid,shphId, result) => {
+Data.getquebyuserid = (date, id, doctorid, shphId, result) => {
     var list = []
     let query = `SELECT e.id as event_id,e.eventId as eventIdlist,h.* FROM map_events e LEFT JOIN users u on e.userId = u.id join history_user_masseuse h on e.id = h.eventId WHERE e.status =1 and e.userId =${id} and e.doctorId =${doctorid} and e.date = '${date}'`;
     // let query = `SELECT e.*,u.firstname,u.lastname FROM events e LEFT JOIN users u on e.doctorId = u.id WHERE e.status !=0 and e.userId =${id} and e.doctorId =${doctorid} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง'`;
@@ -76,33 +76,33 @@ Data.getquebyuserid = (date, id,doctorid,shphId, result) => {
     //     var date = date.replace(' ', '+')
     //     query += ` and e.date LIKE '%${date}%'`;
     // }
-    console.log(query, 'df');
+    // console.log(query, 'df');
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             list.push(res[r].id)
-        //     console.log(res[r].date);
-        //     var d = new Date(res[r].date)
-        //     console.log(d);
-        //     day = (d.getDate()).toString().padStart(2, "0");
-        //     month = (d.getMonth() + 1).toString().padStart(2, "0");
-        // year =   d.getFullYear()
-        // hour = (d.getHours()).toString().padStart(2, "0");
-        // minute = (d.getMinutes()).toString().padStart(2, "0");
-        // second = (d.getSeconds()).toString().padStart(2, "0");
-        // console.log(d.getTime());     
-        // console.log(day);   
-        // console.log(month);   
-        // console.log(year);  
-        // console.log(hour);
-        // console.log(minute);
-        // console.log(second);
-        // if (hour == 00 && minute ==00 && second ==00) {
-        //     date = year+'-'+month+'-'+day
-        // }else{
-        //     // date = "2023-09-25T06:00:00+07:00"
-        //     date = year+'-'+month+'-'+day+'T'+hour+':'+minute+':'+second+'+07:00'
-        // }
-        // res[r].date =  date
+            //     console.log(res[r].date);
+            //     var d = new Date(res[r].date)
+            //     console.log(d);
+            //     day = (d.getDate()).toString().padStart(2, "0");
+            //     month = (d.getMonth() + 1).toString().padStart(2, "0");
+            // year =   d.getFullYear()
+            // hour = (d.getHours()).toString().padStart(2, "0");
+            // minute = (d.getMinutes()).toString().padStart(2, "0");
+            // second = (d.getSeconds()).toString().padStart(2, "0");
+            // console.log(d.getTime());     
+            // console.log(day);   
+            // console.log(month);   
+            // console.log(year);  
+            // console.log(hour);
+            // console.log(minute);
+            // console.log(second);
+            // if (hour == 00 && minute ==00 && second ==00) {
+            //     date = year+'-'+month+'-'+day
+            // }else{
+            //     // date = "2023-09-25T06:00:00+07:00"
+            //     date = year+'-'+month+'-'+day+'T'+hour+':'+minute+':'+second+'+07:00'
+            // }
+            // res[r].date =  date
         }
         if (err) {
             result(null, err);
@@ -112,8 +112,13 @@ Data.getquebyuserid = (date, id,doctorid,shphId, result) => {
     });
 };
 
-Data.gettimebydoctoranddate = (date, id,userid,shphId, result) => {
-    let query = `SELECT e.*,u.firstname,u.lastname FROM events e join users u on u.id = e.doctorId WHERE e.status !=0 and(e.userId is null or e.userId =${userid} ) and e.doctorId =${id} and e.shphId = ${shphId} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE()`;
+Data.gettimebydoctoranddate = (date, id, userid, shphId, type, result) => {
+    let query = `SELECT e.*,u.firstname,u.lastname FROM events e join users u on u.id = e.doctorId `;
+    if (type == 1) {
+        query += ` WHERE e.status !=0 and(e.userId is null) and e.doctorId =${id} and e.shphId = ${shphId} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE() and e.bookstatus != 0`
+    } else if (type == 2) {
+        query += ` WHERE e.status !=0 and(e.userId is null or e.userId =${userid} ) and e.doctorId =${id} and e.shphId = ${shphId} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE()`
+    }
     if (date) {
         // var date = date.replace(' ', '+')
         query += ` and e.date LIKE '%${date}%' order by e.date`;
@@ -212,9 +217,9 @@ Data.geteventbydocanddate = (date, id, result) => {
 function timeformat(time) {
     time = time.split(':')
     return time[0] + '.' + time[1] + ' น.'
-  }
-  
-  Data.createsql = (name, result) => {
+}
+
+Data.createsql = (name, result) => {
     let query = name
     console.log(query);
     sql.query(query, (err, res) => {
@@ -226,12 +231,12 @@ function timeformat(time) {
     });
 };
 
-Data.geteventbyuseranddate = (date, id, result) => {
+Data.geteventbyuseranddate = (date, id, shphId, result) => {
     let query = `SELECT * FROM events WHERE status !=0 and userId =${id}`;
     if (date) {
-        query += ` and date LIKE '%${date}%' and date != '${date}'`;
+        query += ` and date LIKE '%${date}%' and date != '${date}' and shphId = ${shphId}`;
     }
-console.log(query);
+    console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);
@@ -240,20 +245,20 @@ console.log(query);
         result(null, res);
     });
 };
-Data.geteventbydate = (date,datecurrent, result) => {
-    var list =[]
+Data.geteventbydate = (date, datecurrent, result) => {
+    var list = []
     let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
     if (date) {
         query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%') group by e.userId`;
     }
-// console.log(query);
+    // console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             var breaktime = new Date(res[r].date)
             var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
-              var monthtoday = (breaktime.getMonth()+1).toString().padStart(2, "0");
-              var yeartoday =   breaktime.getFullYear()
-              var datetoday = yeartoday+'-'+monthtoday+'-'+daytoday
+            var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+            var yeartoday = breaktime.getFullYear()
+            var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
 
             let peruser = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.userId = ${res[r].userId} and (e.date LIKE '%${datetoday}%') order by e.date asc`;
             sql.query(peruser, (err, user) => {
@@ -261,17 +266,17 @@ Data.geteventbydate = (date,datecurrent, result) => {
                 for (let u = 0; u < user.length; u++) {
                     var breaktime = new Date(user[u].date)
                     if (u == 0) {
-t += timeformat(breaktime.toLocaleTimeString('th-TH'))
+                        t += timeformat(breaktime.toLocaleTimeString('th-TH'))
                     }
-                    if (user.length > 1 && user.length == u+1) {
-                        t+= ' - '
+                    if (user.length > 1 && user.length == u + 1) {
+                        t += ' - '
                     }
-                     if (u+1 == user.length) {
+                    if (u + 1 == user.length) {
                         t += timeformat(breaktime.toLocaleTimeString('th-TH'))
                     }
                     // console.log(u,user.length);
-                    
-                    
+
+
                 }
                 res[r].time = t
                 // console.log(t);
@@ -289,12 +294,12 @@ t += timeformat(breaktime.toLocaleTimeString('th-TH'))
     });
 };
 
-Data.deleteevent = (date, id,shphId, result) => {
-    let query = `DELETE FROM events WHERE doctorId =${id} and bookstatus != 0 and e.shphId = ${shphId}`;
+Data.deleteevent = (date, id, shphId, result) => {
+    let query = `UPDATE events set status = 0 WHERE doctorId =${id} and bookstatus != 0 and bookstatus != 2 and shphId = ${shphId}`;
     if (date) {
         query += ` and date LIKE '%${date}%'`;
     }
-
+    console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -325,57 +330,92 @@ Data.deleteevent = (date, id,shphId, result) => {
             result(null, err);
             return;
         }
-        
+
         result(null, res);
     });
 };
-Data.getAll = (name, id,shphId, result) => {
-    var list =[]
-    let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE() and e.shphId = ${shphId}`;
+Data.getAll = (name, id, shphId, result) => {
+    var list = []
+    let query = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.bookstatus = 2 and e.doctorId =${id} and e.date >= CURDATE() and e.shphId = ${shphId}`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }
-console.log(query);
+    // console.log(query);
     sql.query(query, (err, res) => {
-        console.log(res);
+        // console.log(res);
         for (let r = 0; r < res.length; r++) {
-            if (res[r].date == '2023-10-01T09:00:00+07:00') {
-                res[r].end = '2023-10-01T10:00:00+07:00'
-            }
-        //     console.log(res[r].date);
-        //     var d = new Date(res[r].date)
-        //     console.log(d);
-        //     day = (d.getDate()).toString().padStart(2, "0");
-        //     month = (d.getMonth() + 1).toString().padStart(2, "0");
-        // year =   d.getFullYear()
-        // hour = (d.getHours()).toString().padStart(2, "0");
-        // minute = (d.getMinutes()).toString().padStart(2, "0");
-        // second = (d.getSeconds()).toString().padStart(2, "0");
-        // console.log(d.getTime());     
-        // console.log(day);   
-        // console.log(month);   
-        // console.log(year);  
-        // console.log(hour);
-        // console.log(minute);
-        // console.log(second);
-        // if (hour == 00 && minute ==00 && second ==00) {
-        //     date = year+'-'+month+'-'+day
-        // }else{
-        //     // date = "2023-09-25T06:00:00+07:00"
-        //     date = year+'-'+month+'-'+day+'T'+hour+':'+minute+':'+second+'+07:00'
-        // }
-        // if (res[r].userId == null) {
-        //     list.push(res[r])
-        // }else{
-        //     let query = `SELECT e.*,u.line_token FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE()`;
+            let event = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE() and e.shphId = ${shphId} and e.date LIKE '%${res[r].date}%' and e.userId is null`;
+            //    console.log(event);
+            sql.query(event, (err, events) => {
+                for (let e = 0; e < events.length; e++) {
 
-        // }
+                    list.push(events[e])
+
+                }
+            })
+            let eventbookall = `SELECT m.* FROM map_events m WHERE m.date = '${res[r].date}' and m.status = 1`;
+            //    console.log(event);
+            sql.query(eventbookall, (err, eventbookalls) => {
+                var arrevent =[]
+                var data = {}
+                for (let b = 0; b < eventbookalls.length; b++) {
+                     arrevent = JSON.parse(eventbookalls[b].eventId)
+                    // console.log(arrevent);
+                    // console.log(arrevent.length);
+                    for (let arr = 0; arr < arrevent.length; arr++) {
+                        // console.log(arrevent[arr]);
+                        let eventnotnull = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.id = ${arrevent[arr]}`;
+                        // console.log(eventnotnull);
+                        sql.query(eventnotnull, (err, eventsnotnull) => {
+                            // console.log(arr);
+                            var l = JSON.parse(eventbookalls[b].eventId)
+                            if (arr==0) {
+                                data = eventsnotnull[0]
+                                data.groupId = eventbookalls[b].id
+                            }
+                            if (arr+1 == l.length) {
+                                // console.log(eventsnotnull[0].date);
+                                // console.log(l.length);
+                                data.end = eventsnotnull[0].date
+                                data.groupId = eventbookalls[b].id
+                                list.push(data)
+                            }
+                        })
+                        // console.log(arr);
+                        
+                        // if (arr == 0) {
+                        //     date = eventsnotnull[0]
+                        // }
+                        // // console.log(date);
+                        // if (arr + 1 == eventbookalls.length) {
+                        //     date.end = eventsnotnull[o]
+                        //     // console.log(date);
+
+                        // }
+                        // if (b + 1 == eventbookalls.length) {
+
+                        //     list.push(date)
+                        // }
+                            
+                        // if (arr+1 == arrevent.length) {
+                        //     console.log(data);
+                        //     console.log(1);
+                        //     list.push(data)
+                        // }
+                    }
+
+                }
+
+            });
         }
         if (err) {
             result(null, err);
             return;
         }
-        result(null, res);
+        setTimeout(() => {
+            // console.log(list);
+            result(null, list);
+        }, 500);
     });
 };
 Data.findById = (id, result) => {

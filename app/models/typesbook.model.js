@@ -1,9 +1,9 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.eventId=datas.eventId;};
+this.name=datas.name;};
 Data.create = (newData, result) => {
-sql.query("INSERT INTO history_user_masseuse SET ?", newData, (err, res) => {
+sql.query("INSERT INTO typesbook SET ?", newData, (err, res) => {
 if (err) {
 result(err, null);
 return;
@@ -13,7 +13,7 @@ result(null, { id: res.insertId, ...newData });
 }
 
 Data.getAll = (name, result) => {
-let query = "SELECT * FROM history_user_masseuse";
+let query = "SELECT * FROM typesbook";
 if (name) {
 query += ` WHERE name LIKE '%${name}%'`;
 }
@@ -26,7 +26,7 @@ result(null, res);
 });
 };
 Data.findById = (id, result) => {
-sql.query(`SELECT * FROM history_user_masseuse WHERE eventId = ${id}`, (err, res) => {
+sql.query(`SELECT * FROM typesbook WHERE id = ${id}`, (err, res) => {
 if (err) {
 result(err, null);
 return;
@@ -41,8 +41,8 @@ result({ kind: "not_found" }, null);
 
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE history_user_masseuse SET eventId = ? WHERE id = ?",
-[datas.eventId,id],(err, res) => {
+"UPDATE typesbook SET name = ? WHERE id = ?",
+[datas.name,id],(err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -56,7 +56,7 @@ return;
 };
 Data.remove = (id, result) => {
 sql.query(
-"DELETE FROM history_user_masseuse  WHERE id = ?",id, (err, res) => {
+"DELETE FROM typesbook  WHERE id = ?",id, (err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -70,7 +70,7 @@ result(null, res);
 };
 
 Data.removeAll = result => {
-sql.query("DELETE FROM history_user_masseuse", (err, res) => {
+sql.query("DELETE FROM typesbook", (err, res) => {
 if (err) {
 result(null, err);
 return;

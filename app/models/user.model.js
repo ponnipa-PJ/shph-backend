@@ -346,13 +346,28 @@ Case.getdoctor = (name,result) => {
   });
 };
 
+Case.searchUID = (uid, result) => {
+  // let query = "SELECT * FROM report";
+  let query = `SELECT u.id,u.firstname,u.lastname,u.UID  FROM users u where u.UID= '${uid}'`;
+  
+  // console.log(query);
+  sql.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    //console.log("case_types: ", res);
+    result(null, res[0]);
+  });
+};
+
 Case.getAll = (name,shphId, result) => {
   // let query = "SELECT * FROM report";
-  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token,s.name as shphname ,s.id as shphId FROM users u ";
+  let query = "SELECT u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token,s.name as shphname FROM users u ";
   if (name) {
     query += ` and u.email = '${name}' and u.active = 1`;
-  }else if(shphId){
-    query += ` join roles r on u.role_id = r.id join shph s on u.shphId = s.id and u.shphId = '${shphId}' and u.role_id != 3 and u.active = 1`;
   }else{
     query += ` join roles r on u.role_id = r.id left join shph s on u.shphId = s.id and u.active = 1`;
   

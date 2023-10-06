@@ -1,9 +1,9 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.eventId=datas.eventId;};
+this.historyuserdentistId=datas.historyuserdentistId;this.name=datas.name;this.status=datas.status;this.no=datas.no;};
 Data.create = (newData, result) => {
-sql.query("INSERT INTO history_user_masseuse SET ?", newData, (err, res) => {
+sql.query("INSERT INTO map_history_doctor_masseuse SET ?", newData, (err, res) => {
 if (err) {
 result(err, null);
 return;
@@ -13,9 +13,9 @@ result(null, { id: res.insertId, ...newData });
 }
 
 Data.getAll = (name, result) => {
-let query = "SELECT * FROM history_user_masseuse";
+let query = "SELECT * FROM map_history_doctor_masseuse";
 if (name) {
-query += ` WHERE name LIKE '%${name}%'`;
+query += ` WHERE status = ${name}`;
 }
 sql.query(query, (err, res) => {
 if (err) {
@@ -26,7 +26,7 @@ result(null, res);
 });
 };
 Data.findById = (id, result) => {
-sql.query(`SELECT * FROM history_user_masseuse WHERE eventId = ${id}`, (err, res) => {
+sql.query(`SELECT * FROM map_history_doctor_masseuse WHERE id = ${id}`, (err, res) => {
 if (err) {
 result(err, null);
 return;
@@ -41,8 +41,8 @@ result({ kind: "not_found" }, null);
 
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE history_user_masseuse SET eventId = ? WHERE id = ?",
-[datas.eventId,id],(err, res) => {
+"UPDATE map_history_doctor_masseuse SET historyuserdentistId = ?,name = ?,status = ?,no = ? WHERE id = ?",
+[datas.historyuserdentistId,datas.name,datas.status,datas.no,id],(err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -56,7 +56,7 @@ return;
 };
 Data.remove = (id, result) => {
 sql.query(
-"DELETE FROM history_user_masseuse  WHERE id = ?",id, (err, res) => {
+"DELETE FROM map_history_doctor_masseuse  WHERE id = ?",id, (err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -70,7 +70,7 @@ result(null, res);
 };
 
 Data.removeAll = result => {
-sql.query("DELETE FROM history_user_masseuse", (err, res) => {
+sql.query("DELETE FROM map_history_doctor_masseuse", (err, res) => {
 if (err) {
 result(null, err);
 return;

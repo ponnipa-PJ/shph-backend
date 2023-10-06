@@ -1,4 +1,4 @@
-const Data = require("../models/map_events.model.js");
+const Data = require("../models/typesbook.model.js");
 
 exports.create = (req, res) => {
 if (!req.body) {
@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-date:req.body.date,shphId:req.body.shphId,eventId:req.body.eventId,userId:req.body.userId,createdBy:req.body.createdBy,doctorId:req.body.doctorId,typebook:req.body.typebook,time:req.body.time});
+name:req.body.name,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -18,21 +18,6 @@ err.message || "Some error occurred while creating the Tutorial."
 else res.send(data);
 });
 };
-
-exports.geteventbycreatedBy = (req, res) => {
-    const date = req.query.date;
-    const id = req.query.id;
-    const userid = req.query.userid;
-    const shphId = req.query.shphId;
-    Data.geteventbycreatedBy(date,id,userid,shphId, (err, data) => {
-    if (err)
-    res.status(500).send({
-    message:
-    err.message || "Some error occurred while retrieving table."
-    });
-    else res.send(data);
-    });
-    };
 
 exports.findAll = (req, res) => {
 const name = req.query.name;
