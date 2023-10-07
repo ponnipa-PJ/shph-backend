@@ -19,6 +19,19 @@ else res.send(data);
 });
 };
 
+exports.getdoctorandshpdentist = (req, res) => {
+    const roleId = req.query.roleId;
+    const userId = req.query.userId;
+    Data.getdoctorandshpdentist(roleId,userId, (err, data) => {
+    if (err)
+    res.status(500).send({
+    message:
+    err.message || "Some error occurred while retrieving table."
+    });
+    else res.send(data);
+    });
+    };
+
 exports.getdoctorandshphmasseuse = (req, res) => {
     const roleId = req.query.roleId;
     const userId = req.query.userId;

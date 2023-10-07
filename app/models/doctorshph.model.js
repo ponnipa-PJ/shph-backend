@@ -12,10 +12,39 @@ result(null, { id: res.insertId, ...newData });
 });
 }
 
+Data.getdoctorandshpdentist = (roleId,userId, result) => {
+    let query = ''
+    if (roleId) {
+    query += `SELECT * FROM users u where u.active = 1 and (u.role_id = 4 || u.role_id = 7 ) and u.firstname is not null`;
+    }
+    if (userId) {
+        query += `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${userId} and d.status = 1`;
+        }
+        console.log(query);
+    sql.query(query, (err, res) => {
+        if (roleId) {
+            for (let e = 0; e < res.length; e++) {
+                let shph = `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${res[e].id} and d.status = 1`
+                sql.query(shph, (err, shphs) => {
+                    res[e].shph = shphs
+                });
+            }
+        }
+    if (err) {
+    result(null, err);
+    return;
+    }
+    setTimeout(() => {
+
+        result(null, res);
+    }, 500);
+    });
+    };
+
 Data.getdoctorandshphmasseuse = (roleId,userId, result) => {
     let query = ''
     if (roleId) {
-    query += `SELECT * FROM users u where u.active = 1 and u.role_id = 1`;
+    query += `SELECT * FROM users u where u.active = 1 and u.role_id = 1 and u.firstname is not null`;
     }
     if (userId) {
         query += `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${userId} and d.status = 1`;

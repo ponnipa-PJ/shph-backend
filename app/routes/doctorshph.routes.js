@@ -9,6 +9,9 @@ router.get("/", datas.findAll);
 
 router.get("/getdoctorandshphmasseuse", datas.getdoctorandshphmasseuse);
 
+router.get("/getdoctorandshpdentist", datas.getdoctorandshpdentist);
+
+
 router.get("/:id", datas.findOne);
 
 router.put("/:id", datas.update);

@@ -1,4 +1,4 @@
-const Data = require("../models/shph.model.js");
+const Data = require("../models/history_doctor_dentist.model.js");
 
 exports.create = (req, res) => {
 if (!req.body) {
@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-name:req.body.name,status:req.body.status,createdBy:req.body.createdBy});
+eventId:req.body.eventId,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -18,30 +18,6 @@ err.message || "Some error occurred while creating the Tutorial."
 else res.send(data);
 });
 };
-
-exports.getdoctorandshphdentist = (req, res) => {
-    const name = req.query.name;
-    Data.getdoctorandshphdentist(name, (err, data) => {
-    if (err)
-    res.status(500).send({
-    message:
-    err.message || "Some error occurred while retrieving table."
-    });
-    else res.send(data);
-    });
-    };
-
-exports.getdoctorandshphmasseuse = (req, res) => {
-    const name = req.query.name;
-    Data.getdoctorandshphmasseuse(name, (err, data) => {
-    if (err)
-    res.status(500).send({
-    message:
-    err.message || "Some error occurred while retrieving table."
-    });
-    else res.send(data);
-    });
-    };
 
 exports.findAll = (req, res) => {
 const name = req.query.name;

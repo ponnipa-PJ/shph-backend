@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.createdBy=datas.createdBy;this.confirmstatus=datas.confirmstatus;this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
+    this.shphId=datas.shphId; this.createdBy=datas.createdBy;this.confirmstatus=datas.confirmstatus;this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
 Data.create = (newData, result) => {
     console.log(newData);
 sql.query("INSERT INTO eventsdentist SET ?", newData, (err, res) => {
@@ -15,12 +15,12 @@ result(null, { id: res.insertId, ...newData });
 }
 
 Data.book = (name,id,shphId, result) => {
-    let query = `SELECT e.* FROM eventsdentist e join users u on u.id = e.doctorId WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and u.shphId = ${shphId}`;
+    let query = `SELECT e.* FROM eventsdentist e join users u on u.id = e.doctorId WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and e.shphId = ${shphId}`;
     if (name) {
     query += ` and e.date LIKE '%${name}%'`;
     }
     query += ' Group by e.date'
-    // console.log(query);
+    console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             // console.log(res[r].title);
@@ -28,7 +28,7 @@ Data.book = (name,id,shphId, result) => {
                 let query = `SELECT * FROM eventsdentist WHERE userId = ${id} and date = '${res[r].date}'`;
 // console.log(query);
                 sql.query(query, (err, doc) => {
-if (doc.length > 0) {
+if (doc) {
     res[r] = doc[0]
 }else{
     res[r].bookstatus = 1
@@ -214,8 +214,8 @@ if (doc.length > 0) {
         });
         };
 
-Data.getAll = (name,id, result) => {
-let query = `SELECT * FROM eventsdentist WHERE status !=0 and doctorId = ${id} and date >= CURDATE()`;
+Data.getAll = (name,id,shphId, result) => { 
+let query = `SELECT * FROM eventsdentist WHERE status !=0 and doctorId = ${id} and shphId = ${shphId} and date >= CURDATE()`;
 if (name) {
 query += ` and date LIKE '%${name}%'`;
 }
@@ -315,9 +315,9 @@ return;
 }
 );
 };
-Data.remove = (id, result) => {
+Data.remove = (id,shphId, result) => {
 sql.query(
-"UPDATE eventsdentist set status = 0 WHERE id = ?",id, (err, res) => {
+"UPDATE eventsdentist set status = 0 WHERE id = ? and shphId =? ",id,shphId, (err, res) => {
 if (err) {
 result(null, err);
 return;
