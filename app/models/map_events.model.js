@@ -14,10 +14,10 @@ Data.create = (newData, result) => {
                     typebook:newData.typebook,
                     time:newData.time,
     }
-    // console.log(data);
+    // //console.log(data);
 sql.query("INSERT INTO map_events SET ?", data, (err, res) => {
 if (err) {
-    console.log(err);
+    //console.log(err);
 result(err, null);
 return;
 }

@@ -20,7 +20,7 @@ Data.getdoctorandshpdentist = (roleId,userId, result) => {
     if (userId) {
         query += `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${userId} and d.status = 1`;
         }
-        console.log(query);
+        //console.log(query);
     sql.query(query, (err, res) => {
         if (roleId) {
             for (let e = 0; e < res.length; e++) {
@@ -49,7 +49,7 @@ Data.getdoctorandshphmasseuse = (roleId,userId, result) => {
     if (userId) {
         query += `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${userId} and d.status = 1`;
         }
-        console.log(query);
+        //console.log(query);
     sql.query(query, (err, res) => {
         if (roleId) {
             for (let e = 0; e < res.length; e++) {

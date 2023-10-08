@@ -15,15 +15,15 @@ result(null, { id: res.insertId, ...newData });
 
 
 Data.getdoctorandshphdentist = (name, result) => {
-    let query = `SELECT u.id,u.firstname,u.lastname FROM users u join eventsdentist e on u.id = e.doctorId where u.active = 1 and (u.role_id = 4 || u.role_id = 7 ) and e.status = 1 GROUP by e.doctorId`;
+    let query = `SELECT s.* FROM users u join eventsdentist e on u.id = e.doctorId join doctorshph d on e.doctorId = d.docrtorId join shph s on s.id = d.shphId where u.active = 1 and (u.role_id = 4 || u.role_id = 7 ) and e.status = 1 and d.status = 1 and e.date >= CURDATE() GROUP by e.shphId`;
     sql.query(query, (err, res) => {
-            for (let e = 0; e < res.length; e++) {
-                let shph = `select s.* from eventsdentist e join shph s on e.shphId = s.id where e.doctorId = ${res[e].id} GROUP BY e.shphId`
-                console.log(shph);
-                sql.query(shph, (err, shphs) => {
-                    res[e].shph = shphs
-                });
-            }
+            // for (let e = 0; e < res.length; e++) {
+            //     let shph = `select s.* from eventsdentist e join shph s on e.shphId = s.id where e.doctorId = ${res[e].id} GROUP BY e.shphId`
+            //     console.log(shph);
+            //     sql.query(shph, (err, shphs) => {
+            //         res[e].shph = shphs
+            //     });
+            // }
     if (err) {
     result(null, err);
     return;

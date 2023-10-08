@@ -60,7 +60,7 @@ Data.getquebyuserid = (date, id, result) => {
         var date = date.replace(' ', '+')
         query += ` and e.date = '${date}'`;
     }
-    console.log(query, 'df');
+    //console.log(query, 'df');
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -101,7 +101,7 @@ Data.getdoctorbydate = (date, id, result) => {
         var date = date.replace(' ', '+')
         query += ` and e.date = '${date}'`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -142,7 +142,7 @@ Data.geteventbydocanddate = (date, id, result) => {
         var date = date.replace(' ', '+')
         query += ` and e.date = '${date}'`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);

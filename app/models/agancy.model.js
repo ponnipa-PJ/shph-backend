@@ -4,7 +4,7 @@ const Data = function (datas) {
 this.user_id=datas.user_id,this.file_name=datas.file_name,this.company_name=datas.company_name;this.file=datas.file;this.activate=datas.activate;this.status=datas.status;this.updated_date=datas.updated_date;};
 Data.create = (newData, result) => {
 sql.query("INSERT INTO agancy SET ?", newData, (err, res) => {
-    console.log(err);
+    //console.log(err);
 if (err) {
 result(err, null);
 return;
@@ -21,7 +21,7 @@ query += ` and a.user_id = ${name}`;
 if (status) {
     query += ` and a.activate = 1`;
     }
-console.log(query);
+//console.log(query);
 sql.query(query, (err, res) => {
 if (err) {
 result(null, err);

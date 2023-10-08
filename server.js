@@ -428,6 +428,7 @@ require("./app/routes/history_doctor_masseuse.routes")(app);
 require("./app/routes/map_history_doctor_masseuse.routes")(app);
 require("./app/routes/map_history_doctor_dentist.routes")(app);
 require("./app/routes/history_doctor_dentist.routes")(app);
+require("./app/routes/history_user_dentist.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

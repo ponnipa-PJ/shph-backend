@@ -14,6 +14,7 @@ router.get("/book", datas.book);
 router.get("/getdoctorbydate", datas.getdoctorbydate);
 router.get("/geteventbyuseranddate", datas.geteventbyuseranddate);
 router.get("/geteventbydocanddate", datas.geteventbydocanddate);
+router.get("/createsql", datas.createsql);
 
 router.get("/getquebyuserid", datas.getquebyuserid);
 router.get("/:id", datas.findOne);

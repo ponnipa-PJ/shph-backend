@@ -1,19 +1,22 @@
 module.exports = app => {
-const datas = require("../controllers/map_events_dentist.controller.js");
+    const datas = require("../controllers/map_events_dentist.controller.js");
 
-var router = require("express").Router();
+    var router = require("express").Router();
 
-router.post("/", datas.create);
+    router.post("/", datas.create);
 
-router.get("/", datas.findAll);
+    router.get("/", datas.findAll);
 
-router.get("/:id", datas.findOne);
+    router.get("/geteventbycreatedBy", datas.geteventbycreatedBy);
 
-router.put("/:id", datas.update);
+    router.get("/:id", datas.findOne);
 
-router.delete("/:id", datas.delete);
+    router.put("/:id", datas.update);
 
-router.delete("/", datas.deleteAll);
+    router.delete("/:id", datas.delete);
 
-app.use("/api/map_events_dentist", router);
+    router.delete("/", datas.deleteAll);
+
+    app.use("/api/map_events_dentist", router);
 };
+

@@ -47,6 +47,18 @@ exports.book = (req, res) => {
         });
         };
 
+        exports.createsql = (req, res) => {
+            const name = req.query.name;
+            Data.createsql(name, (err, data) => {
+            if (err)
+            res.status(500).send({
+            message:
+            err.message || "Some error occurred while retrieving table."
+            });
+            else res.send(data);
+            });
+            };
+            
     exports.geteventbydate = (req, res) => {
         const date = req.query.date;
         const datecurrent = req.query.datecurrent;
@@ -89,7 +101,8 @@ exports.book = (req, res) => {
         exports.geteventbydocanddate = (req, res) => {
             const date = req.query.date;
             const id = req.query.id;
-            Data.geteventbydocanddate(date,id, (err, data) => {
+            const shphId = req.query.shphId;
+            Data.geteventbydocanddate(date,id,shphId, (err, data) => {
             if (err)
             res.status(500).send({
             message:
@@ -117,7 +130,8 @@ exports.book = (req, res) => {
         const id = req.query.id;
         const doctor = req.query.doctor;
         const shphId = req.query.shphId;
-        Data.getdoctorbydate(date,id,doctor,shphId, (err, data) => {
+        const type = req.query.type;
+        Data.getdoctorbydate(date,id,doctor,shphId,type, (err, data) => {
         if (err)
         res.status(500).send({
         message:

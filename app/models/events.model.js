@@ -7,7 +7,7 @@ Data.create = (newData, result) => {
     // console.log(newData);
     sql.query("INSERT INTO events SET ?", newData, (err, res) => {
         if (err) {
-            console.log(err);
+            //console.log(err);
             result(err, null);
             return;
         }
@@ -15,9 +15,9 @@ Data.create = (newData, result) => {
     });
 }
 Data.createcolumn = (name, result) => {
-    console.log(name);
+    //console.log(name);
     let query = `ALTER TABLE history_user_masseuse ADD ID${name} varchar(255) NULL`;
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);
@@ -34,7 +34,7 @@ Data.book = (name, id, shphId, result) => {
         query += ` and e.date LIKE '%${name}%'`;
     }
     // query += ' Group by e.doctorId order by e.date'
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             res[r].title = res[r].firstname + ' ' + res[r].lastname
@@ -123,7 +123,7 @@ Data.gettimebydoctoranddate = (date, id, userid, shphId, type, result) => {
         // var date = date.replace(' ', '+')
         query += ` and e.date LIKE '%${date}%' order by e.date`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -164,7 +164,7 @@ Data.getdoctorbydate = (date, id, result) => {
         var date = date.replace(' ', '+')
         query += ` and e.date = '${date}'`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -205,7 +205,7 @@ Data.geteventbydocanddate = (date, id, result) => {
         var date = date.replace(' ', '+')
         query += ` and e.date = '${date}'`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);
@@ -221,7 +221,7 @@ function timeformat(time) {
 
 Data.createsql = (name, result) => {
     let query = name
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);
@@ -236,7 +236,7 @@ Data.geteventbyuseranddate = (date, id, shphId, result) => {
     if (date) {
         query += ` and date LIKE '%${date}%' and date != '${date}' and shphId = ${shphId}`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);
@@ -299,7 +299,7 @@ Data.deleteevent = (date, id, shphId, result) => {
     if (date) {
         query += ` and date LIKE '%${date}%'`;
     }
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -438,7 +438,7 @@ Data.updateconfirm = (id, datas, result) => {
         "UPDATE events SET confirmstatus = ? WHERE id = ?",
         [datas.confirmstatus, id], (err, res) => {
             if (err) {
-                console.log(err);
+                //console.log(err);
                 result(null, err);
                 return;
             }
@@ -455,7 +455,7 @@ Data.updateuser = (id, datas, result) => {
         "UPDATE events SET title = ?,userId=?,bookstatus=? WHERE id = ?",
         [datas.title, datas.userId, datas.bookstatus, id], (err, res) => {
             if (err) {
-                console.log(err);
+                //console.log(err);
                 result(null, err);
                 return;
             }

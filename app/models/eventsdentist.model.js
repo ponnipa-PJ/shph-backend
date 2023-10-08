@@ -3,10 +3,10 @@ const sql = require("./db");
 const Data = function (datas) {
     this.shphId=datas.shphId; this.createdBy=datas.createdBy;this.confirmstatus=datas.confirmstatus;this.remark=datas.remark;this.noti=datas.noti;this.userId=datas.userId;this.borderColor=datas.borderColor;this.backgroundColor=datas.backgroundColor;this.title=datas.title;this.date=datas.date;this.doctorId=datas.doctorId;this.bookstatus=datas.bookstatus;this.status=datas.status;};
 Data.create = (newData, result) => {
-    console.log(newData);
+    //console.log(newData);
 sql.query("INSERT INTO eventsdentist SET ?", newData, (err, res) => {
 if (err) {
-    console.log(err);
+    //console.log(err);
 result(err, null);
 return;
 }
@@ -20,25 +20,19 @@ Data.book = (name,id,shphId, result) => {
     query += ` and e.date LIKE '%${name}%'`;
     }
     query += ' Group by e.date'
-    console.log(query);
+    //console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             // console.log(res[r].title);
             if (res[r].title != 'พักเที่ยง' &&  res[r].title != 'พักเทียง') {
-                let query = `SELECT * FROM eventsdentist WHERE userId = ${id} and date = '${res[r].date}'`;
+                let query = `SELECT * FROM eventsdentist WHERE userId is null and date = '${res[r].date}'`;
 // console.log(query);
                 sql.query(query, (err, doc) => {
-if (doc) {
+                    // console.log(doc);
+if (doc.length > 0) {
     res[r] = doc[0]
-}else{
-    res[r].bookstatus = 1
-    res[r].userId = null
-    res[r].remark = null
-    res[r].title = 'ว่าง'
 }
                 })
-            }else{
-                console.log(1);
             }
         }
     if (err) {
@@ -65,6 +59,17 @@ if (doc) {
         });
     };
 
+    Data.createsql = (name, result) => {
+        let query = name
+        //console.log(query);
+        sql.query(query, (err, res) => {
+            if (err) {
+                result(null, err);
+                return;
+            }
+            result(null, res);
+        });
+    };
     Data.geteventbydate = (date,datecurrent, result) => {
         let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM eventsdentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
         if (date) {
@@ -96,12 +101,12 @@ if (doc) {
     };
     
     Data.getquebyuserid = (date,id,shphId, result) => {
-        let query = `SELECT e.*,u.firstname,u.lastname FROM eventsdentist e LEFT JOIN users u on e.doctorId = u.id WHERE e.status !=0 and e.userId =${id} and u.shphId = ${shphId}`;
+        let query = `SELECT e.*,u.firstname,u.lastname FROM eventsdentist e LEFT JOIN users u on e.doctorId = u.id WHERE e.status !=0 and e.bookstatus =0 and e.userId =${id} and u.shphId = ${shphId}`;
         if (date) {
         var date = date.replace(' ','+')
         query += ` and e.date = '${date}'`;
         }
-        console.log(query,'df');
+        //console.log(query,'df');
         sql.query(query, (err, res) => {
             // for (let r = 0; r < res.length; r++) {
             //     console.log(res[r].date);
@@ -136,13 +141,13 @@ if (doc) {
         });
         };
         
-        Data.geteventbydocanddate = (date,id, result) => {
-            let query = `SELECT e.*,u.firstname,u.lastname FROM eventsdentist e LEFT join users u on e.doctorId = u.id WHERE e.doctorId = ${id}`;
+        Data.geteventbydocanddate = (date,id,shphId, result) => {
+            let query = `SELECT e.*,u.firstname,u.lastname FROM eventsdentist e LEFT join users u on e.doctorId = u.id WHERE e.doctorId = ${id} and e.shphId = ${shphId}`;
             if (date) {
                 var date = date.replace(' ','+')
             query += ` and e.date = '${date}'`;
             }
-            console.log(query);
+            //console.log(query);
             sql.query(query, (err, res) => {
             if (err) {
             result(null, err);
@@ -152,33 +157,46 @@ if (doc) {
             });
             };
         Data.geteventbyuseranddate = (date,id,shphId, result) => {
-            let query = `SELECT count(e.doctorId) as count,e.doctorId FROM eventsdentist e join users u on u.id = e.doctorId WHERE e.status !=0 and e.userId is not null and u.shphId = ${shphId}`;
+            var list = []
+            let query = `SELECT e.doctorId FROM eventsdentist e WHERE e.status !=0 and e.bookstatus != 0 and e.userId is not null and e.shphId = ${shphId}`;
             if (date) {
-            query += ` and e.date LIKE '%${date}%' and e.date != '${date}' group by e.doctorId`;
+                var date = date.replace(' ','+')
+            query += ` and e.date = '${date}' group by e.doctorId`;
             }
-            
+            console.log(query);
             sql.query(query, (err, res) => {
+                for (let r = 0; r < res.length; r++) {
+                    list.push(res[r].doctorId)
+                    
+                }
             if (err) {
             result(null, err);
             return;
             }
-            result(null, res);
+            result(null, list);
             });
             };
-    Data.getdoctorbydate = (date,id,doctor,shphId, result) => {
-        console.log(doctor);
+    Data.getdoctorbydate = (date,id,doctor,shphId,type, result) => {
+        console.log(type);
         var doctorlist = JSON.parse(doctor)
         var strdoc = ''
         for (let d = 0; d < doctorlist.length; d++) {
             strdoc += ' and e.doctorId != '+doctorlist[d]
             
         }
-        let query = `SELECT d.* FROM eventsdentist e  LEFT JOIN users d on e.doctorId = d.id WHERE e.status !=0 and(e.userId is null or e.userId =${id} ) and d.shphId = ${shphId}`;
+        let query = ''
+        if (type == 1) {
+            query = `SELECT d.* FROM eventsdentist e  LEFT JOIN users d on e.doctorId = d.id WHERE e.status !=0 and e.userId is null and e.shphId = ${shphId}`;
+
+        }else{
+            query = `SELECT d.* FROM eventsdentist e  LEFT JOIN users d on e.doctorId = d.id WHERE e.status !=0 and (e.userId is null or e.doctorId =${doctor}) and e.shphId = ${shphId}`;
+        }
         if (date) {
         var date = date.replace(' ','+')
+        
+        // query += strdoc
         query += ` and e.date = '${date}' GROUP BY e.doctorId`;
         }
-        query += strdoc
         console.log(query);
         sql.query(query, (err, res) => {
             // for (let r = 0; r < res.length; r++) {
@@ -215,9 +233,9 @@ if (doc) {
         };
 
 Data.getAll = (name,id,shphId, result) => { 
-let query = `SELECT * FROM eventsdentist WHERE status !=0 and doctorId = ${id} and shphId = ${shphId} and date >= CURDATE()`;
+let query = `SELECT e.*,m.id as groupId FROM eventsdentist e left join map_events_dentist m on e.id = m.eventId WHERE e.status !=0 and e.doctorId = ${id} and e.shphId = ${shphId} and e.date >= CURDATE()`;
 if (name) {
-query += ` and date LIKE '%${name}%'`;
+query += ` and e.date LIKE '%${name}%'`;
 }
 
 sql.query(query, (err, res) => {
@@ -316,8 +334,9 @@ return;
 );
 };
 Data.remove = (id,shphId, result) => {
+    // console.log(id);
 sql.query(
-"UPDATE eventsdentist set status = 0 WHERE id = ? and shphId =? ",id,shphId, (err, res) => {
+"UPDATE eventsdentist set status = 0 WHERE id = ? ",id, (err, res) => {
 if (err) {
 result(null, err);
 return;
