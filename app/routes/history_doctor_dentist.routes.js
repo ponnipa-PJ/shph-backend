@@ -7,6 +7,8 @@ router.post("/", datas.create);
 
 router.get("/", datas.findAll);
 
+router.get("/getreportdoctor", datas.getreportdoctor);
+
 router.get("/:id", datas.findOne);
 
 router.put("/:id", datas.update);

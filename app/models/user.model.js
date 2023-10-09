@@ -96,7 +96,7 @@ Case.getmenu = (id, result) => {
 };
 
 Case.findById = (id, result) => {
-  sql.query(`SELECT u.*,s.id as shphId FROM  users u left join shph s on u.shphId = s.id WHERE u.id  = '${id}'`, (err, res) => {
+  sql.query(`SELECT u.* FROM  users u WHERE u.id  = '${id}'`, (err, res) => {
     if (err) {
       //console.log("error: ", err);
       result(err, null);

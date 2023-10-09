@@ -12,19 +12,76 @@ result(null, { id: res.insertId, ...newData });
 });
 }
 
-Data.getAll = (name, result) => {
-let query = "SELECT * FROM history_doctor_masseuse";
+Data.getAll = (name,doctorId, result) => {
+let query = "SELECT m.id,m.date,m.time,d.firstname,d.lastname FROM history_doctor_masseuse h join map_events m on m.id = h.eventId join users d on m.doctorId = d.id join users u on m.userId = u.id where h.status = 1";
 if (name) {
-query += ` WHERE name LIKE '%${name}%'`;
+query += ` and m.userId = ${name}`;
 }
+if (doctorId) {
+    query += ` and m.doctorId = ${doctorId}`;
+    }
+query += ` order by m .date desc`
+// console.log(query);
 sql.query(query, (err, res) => {
+    for (let r = 0; r < res.length; r++) {
+        let allfinish = `SELECT h.*,u.firstname,u.lastname,u.UID FROM history_doctor_masseuse h join map_events m on m.id = h.eventId join users u on u.id = m.userId where h.eventId = ${res[r].id}`;
+        // console.log(allfinish);
+            res[r].idtab = 'heading'+(r+1)
+            res[r].target = '#collapse'+(r+1)
+            res[r].controls = 'collapse'+(r+1)
+            // res[r].idtab = 'headingOne'
+            // res[r].target = '#collapseOne'
+            // res[r].controls = 'collapseOne'
+        sql.query(allfinish, (err, allfinishs) => {
+            res[r].case = allfinishs[0]
+        });
+    }
 if (err) {
 result(null, err);
 return;
 }
-result(null, res);
+setTimeout(() => {
+
+    result(null, res);
+}, 500);
 });
 };
+
+Data.getreportdoctor = (userId,doctorId, result) => {
+    let query = "SELECT u.UID,m.userId,u.firstname as userfirstname,u.lastname as userlastname FROM history_doctor_masseuse h join map_events m on m.id = h.eventId join users d on m.doctorId = d.id join users u on m.userId = u.id where h.status = 1";
+    if (userId) {
+    query += ` and m.userId = ${userId}`;
+    }
+    if (doctorId) {
+        query += ` and m.doctorId = ${doctorId}`;
+        }
+    query += ` group by m.userId;`
+    console.log(query);
+    sql.query(query, (err, res) => {
+        // for (let r = 0; r < res.length; r++) {
+        //     let allfinish = `SELECT m.date,h.*,u.firstname,u.lastname,u.UID FROM history_doctor_dentist h join map_events_dentist m on m.id = h.eventId join users u on u.id = m.userId where h.eventId = ${res[r].id}`;
+        //     // console.log(allfinish);
+        //         res[r].idtab = 'headingden'+(r+1)
+        //         res[r].target = '#collapseden'+(r+1)
+        //         res[r].controls = 'collapseden'+(r+1)
+        //         // res[r].idtab = 'headingOne'
+        //         // res[r].target = '#collapseOne'
+        //         // res[r].controls = 'collapseOne'
+        //     sql.query(allfinish, (err, allfinishs) => {
+        //         res[r].case = allfinishs[0]
+        //     });
+        // }
+    if (err) {
+    result(null, err);
+    return;
+    }
+    setTimeout(() => {
+    
+        result(null, res);
+    }, 500);
+    });
+    };
+
 Data.findById = (id, result) => {
 sql.query(`SELECT * FROM history_doctor_masseuse WHERE eventId = ${id}`, (err, res) => {
 if (err) {
