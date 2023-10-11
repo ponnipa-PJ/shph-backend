@@ -236,7 +236,7 @@ Data.geteventbyuseranddate = (date, id, shphId, result) => {
     if (date) {
         query += ` and date LIKE '%${date}%' and date != '${date}' and shphId = ${shphId}`;
     }
-    //console.log(query);
+    console.log(query);
     sql.query(query, (err, res) => {
         if (err) {
             result(null, err);

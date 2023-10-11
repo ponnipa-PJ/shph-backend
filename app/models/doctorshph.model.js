@@ -12,6 +12,60 @@ result(null, { id: res.insertId, ...newData });
 });
 }
 
+Data.getnotdoctors = (doctorId,userId, result) => {
+    var listshph = []
+    let query = "SELECT * FROM shph s where s.status = 1;";
+
+    sql.query(query, (err, res) => {
+        for (let r = 0; r < res.length; r++) {
+            let getdoctor = ` SELECT * FROM doctorshph d WHERE d.docrtorId = ${doctorId} and d.shphId = ${res[r].id}`;
+            // console.log(getdoctor);
+            sql.query(getdoctor, (err, doc) => {
+if (doc.length == 0) {
+    listshph.push(res[r].id)
+}
+            });
+            
+        }
+    if (err) {
+    result(null, err);
+    return;
+    }
+    setTimeout(() => {
+
+        result(null, listshph);
+    }, 500);
+    });
+    };
+
+Data.getdoctorandshpdentist = (roleId,userId, result) => {
+    let query = ''
+    if (roleId) {
+    query += `SELECT * FROM users u where u.active = 1 and (u.role_id = 4 || u.role_id = 7 ) and u.firstname is not null`;
+    }
+    if (userId) {
+        query += `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${userId} and d.status = 1`;
+        }
+        //console.log(query);
+    sql.query(query, (err, res) => {
+        if (roleId) {
+            for (let e = 0; e < res.length; e++) {
+                let shph = `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${res[e].id} and d.status = 1`
+                sql.query(shph, (err, shphs) => {
+                    res[e].shph = shphs
+                });
+            }
+        }
+    if (err) {
+    result(null, err);
+    return;
+    }
+    setTimeout(() => {
+
+        result(null, res);
+    }, 500);
+    });
+    };
 Data.getdoctorandshpdentist = (roleId,userId, result) => {
     let query = ''
     if (roleId) {
@@ -73,7 +127,7 @@ Data.getdoctorandshphmasseuse = (roleId,userId, result) => {
 Data.getAll = (name, result) => {
 let query = "SELECT d.*,s.name FROM doctorshph d join shph s on d.shphId = s.id";
 if (name) {
-query += ` WHERE docrtorId = ${name}`;
+query += ` WHERE docrtorId = ${name} and s.status = 1`;
 }
 sql.query(query, (err, res) => {
 if (err) {

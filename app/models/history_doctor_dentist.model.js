@@ -59,7 +59,7 @@ Data.getAll = (name,doctorId, result) => {
     console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
-            let allfinish = `SELECT m.date,h.*,u.firstname,u.lastname,u.UID FROM history_doctor_dentist h join map_events_dentist m on m.id = h.eventId join users u on u.id = m.userId where h.eventId = ${res[r].id}`;
+            let allfinish = `SELECT m.type,m.date,h.*,u.firstname,u.lastname,u.UID FROM history_doctor_dentist h join map_events_dentist m on m.id = h.eventId join users u on u.id = m.userId where h.eventId = ${res[r].id}`;
             // console.log(allfinish);
                 res[r].idtab = 'headingden'+(r+1)
                 res[r].target = '#collapseden'+(r+1)

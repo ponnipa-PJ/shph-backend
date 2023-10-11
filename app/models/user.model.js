@@ -377,7 +377,7 @@ Case.getAll = (name,roleId, result) => {
   //   query +=  ` where u.role_id = 7`
   // }
   query += ` order by r.no,u.id`;
-  // console.log(query);
+  console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);

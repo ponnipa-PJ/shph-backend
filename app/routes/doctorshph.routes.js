@@ -11,6 +11,7 @@ router.get("/getdoctorandshphmasseuse", datas.getdoctorandshphmasseuse);
 
 router.get("/getdoctorandshpdentist", datas.getdoctorandshpdentist);
 
+router.get("/getnotdoctors", datas.getnotdoctors);
 
 router.get("/:id", datas.findOne);
 

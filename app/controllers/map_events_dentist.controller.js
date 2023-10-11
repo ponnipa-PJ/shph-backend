@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-date:req.body.date,shphId:req.body.shphId,eventId:req.body.eventId,userId:req.body.userId,createdBy:req.body.createdBy,doctorId:req.body.doctorId,typebook:req.body.typebook,time:req.body.time});
+date:req.body.date,shphId:req.body.shphId,eventId:req.body.eventId,userId:req.body.userId,createdBy:req.body.createdBy,doctorId:req.body.doctorId,typebook:req.body.typebook,time:req.body.time,type:req.body.type});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({

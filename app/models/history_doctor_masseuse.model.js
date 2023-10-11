@@ -24,7 +24,7 @@ query += ` order by m .date desc`
 console.log(query);
 sql.query(query, (err, res) => {
     for (let r = 0; r < res.length; r++) {
-        let allfinish = `SELECT h.*,u.firstname,u.lastname,u.UID FROM history_doctor_masseuse h join map_events m on m.id = h.eventId join users u on u.id = m.userId where h.eventId = ${res[r].id}`;
+        let allfinish = `SELECT m.type,h.*,u.firstname,u.lastname,u.UID FROM history_doctor_masseuse h join map_events m on m.id = h.eventId join users u on u.id = m.userId where h.eventId = ${res[r].id}`;
         // console.log(allfinish);
             res[r].idtab = 'heading'+(r+1)
             res[r].target = '#collapse'+(r+1)

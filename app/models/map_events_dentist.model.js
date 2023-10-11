@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.date=datas.date;this.shphId=datas.shphId;this.eventId=datas.eventId;this.userId=datas.userId;this.createdBy=datas.createdBy;this.doctorId=datas.doctorId;this.typebook=datas.typebook;this.time=datas.time};
+this.date=datas.date;this.shphId=datas.shphId;this.eventId=datas.eventId;this.userId=datas.userId;this.createdBy=datas.createdBy;this.doctorId=datas.doctorId;this.typebook=datas.typebook;this.time=datas.time;this.type=datas.type};
 Data.create = (newData, result) => {
     //console.log(newData.eventId);
     var data = {
@@ -13,6 +13,7 @@ Data.create = (newData, result) => {
                     createdBy:newData.createdBy,
                     typebook:newData.typebook,
                     time:newData.time,
+                    type:JSON.stringify(newData.type),
     }
     // console.log(data);
 sql.query("INSERT INTO map_events_dentist SET ?", data, (err, res) => {
@@ -75,7 +76,7 @@ result(null, res);
 });
 };
 Data.findById = (id, result) => {
-sql.query(`SELECT m.doctorId,m.date,u.UID,m.userId,m.id as eventId,m.eventId as eventIdlist,m.typebook,h.*,u.firstname,u.lastname,m.time FROM map_events_dentist m join users u on m.userId = u.id join history_user_dentist h on h.eventId = m.id WHERE m.id = ${id}`, (err, res) => {
+sql.query(`SELECT m.type,m.doctorId,m.date,u.UID,m.userId,m.id as eventId,m.eventId as eventIdlist,m.typebook,h.*,u.firstname,u.lastname,m.time FROM map_events_dentist m join users u on m.userId = u.id join history_user_dentist h on h.eventId = m.id WHERE m.id = ${id}`, (err, res) => {
 if (err) {
 result(err, null);
 return;
