@@ -17,6 +17,8 @@ let query = "SELECT * FROM map_history_doctor_dentist";
 if (name) {
 query += ` WHERE status = ${name}`;
 }
+query += ' order by no'
+
 sql.query(query, (err, res) => {
 if (err) {
 result(null, err);

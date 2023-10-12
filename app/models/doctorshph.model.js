@@ -12,6 +12,22 @@ result(null, { id: res.insertId, ...newData });
 });
 }
 
+
+Data.getshphbydoc = (doctorId, result) => {
+    let query = "SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id";
+    if (doctorId) {
+    query += ` WHERE docrtorId = ${doctorId} and s.status = 1 and d.status = 1`;
+    }
+    // console.log(query);
+    sql.query(query, (err, res) => {
+    if (err) {
+    result(null, err);
+    return;
+    }
+    result(null, res);
+    });
+    };
+
 Data.getnotdoctors = (doctorId,userId, result) => {
     var listshph = []
     let query = "SELECT * FROM shph s where s.status = 1;";
@@ -19,7 +35,7 @@ Data.getnotdoctors = (doctorId,userId, result) => {
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
             let getdoctor = ` SELECT * FROM doctorshph d WHERE d.docrtorId = ${doctorId} and d.shphId = ${res[r].id}`;
-            // console.log(getdoctor);
+            //console.log(getdoctor);
             sql.query(getdoctor, (err, doc) => {
 if (doc.length == 0) {
     listshph.push(res[r].id)
@@ -98,19 +114,28 @@ Data.getdoctorandshpdentist = (roleId,userId, result) => {
 Data.getdoctorandshphmasseuse = (roleId,userId, result) => {
     let query = ''
     if (roleId) {
-    query += `SELECT * FROM users u where u.active = 1 and u.role_id = 1 and u.firstname is not null`;
+    query += `SELECT * FROM users u where u.active = 1 and u.role_id = 1 or u.role_id = 7 and u.firstname is not null`;
     }
     if (userId) {
         query += `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${userId} and d.status = 1`;
         }
-        //console.log(query);
+        // console.log(query);
     sql.query(query, (err, res) => {
         if (roleId) {
             for (let e = 0; e < res.length; e++) {
-                let shph = `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id where d.docrtorId = ${res[e].id} and d.status = 1`
+                if (res[e].role_id ==7) {
+                    let shphonce = `SELECT s.* From shph s where s.status = 1`
+            sql.query(shphonce, (err, shphonces) => {
+                // console.log(shphonces);
+                res[e].shph = shphonces
+            })
+                }else{
+                let shph = `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id join users u on u.id = d.docrtorId where d.docrtorId = ${res[e].id} and d.status = 1`
                 sql.query(shph, (err, shphs) => {
                     res[e].shph = shphs
+                    
                 });
+            }
             }
         }
     if (err) {
@@ -129,6 +154,7 @@ let query = "SELECT d.*,s.name FROM doctorshph d join shph s on d.shphId = s.id"
 if (name) {
 query += ` WHERE docrtorId = ${name} and s.status = 1`;
 }
+console.log(query);
 sql.query(query, (err, res) => {
 if (err) {
 result(null, err);

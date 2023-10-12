@@ -23,6 +23,9 @@ const Case = function (cases) {
   this.provinceId = cases.provinceId;
   this.shphId = cases.shphId;
   this.UID = cases.UID;
+  this.shphId = cases.shphId
+  this.adminshphId = cases.adminshphId
+  
 };
 
 Case.create = (newUser, result) => {
@@ -43,6 +46,9 @@ Case.create = (newUser, result) => {
   amphureId : newUser.amphureId,
   provinceId : newUser.provinceId,
   UID : newUser.UID,
+  shphId:newUser.shphId,
+  adminshphId:newUser.adminshphId,
+  
   }];
   // console.log(news);
   sql.query("INSERT INTO  users SET ?", news, (err, res) => {
@@ -77,7 +83,7 @@ Case.getmenuarray = (id, result) => {
 };
 
 Case.getmenu = (id, result) => {
-  sql.query(`SELECT m.name,m.url FROM role_menu rm join menus m on rm.menu_id = m.id WHERE rm.role_id = '${id}' order by m.no`, (err, res) => {
+  sql.query(`SELECT m.icon,m.name,m.url FROM role_menu rm join menus m on rm.menu_id = m.id WHERE rm.role_id = '${id}' order by m.no`, (err, res) => {
     if (err) {
       //console.log("error: ", err);
       result(err, null);
@@ -87,6 +93,26 @@ Case.getmenu = (id, result) => {
     if (res.length) {
       //console.log("found casess: ", res);
       result(null, res);
+      return;
+    }
+
+    // not found Tutorial with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
+Case.findByadminshphId = (id, result) => {
+  console.log(id);
+  sql.query(`SELECT u.* FROM  users u WHERE u.adminshphId  = ${id}`, (err, res) => {
+    if (err) {
+      //console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      //console.log("found casess: ", res);
+      result(null, res[0]);
       return;
     }
 
@@ -116,7 +142,7 @@ Case.findById = (id, result) => {
 
 Case.signin = (req, result) => {
   // console.log(req);
-    sql.query(`SELECT u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
+    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);
@@ -140,6 +166,7 @@ Case.signin = (req, result) => {
                 accessToken:token,
                 email:res[0].email,
                 UID:res[0].UID,
+                shphId:res[0].shphId,
               }
               // console.log(data);
               result(null, data);
@@ -163,6 +190,7 @@ Case.signin = (req, result) => {
             accessToken:token,
             email:res[0].email,
             UID:res[0].UID,
+            shphId:res[0].shphId,
           }
           // console.log(data);
           result(null, data);
@@ -412,8 +440,8 @@ Case.updateById = (id, cases, result) => {
     cases.password = bcrypt.hashSync(cases.password, 8)
   }
   sql.query(
-    "UPDATE  users SET firstname=?,lastname=?,email = ?,password = ? ,role_id = ?,line_token = ? ,phone = ?,number=?,moo=?,soi=?,provinceId=?,amphureId=?,districtsId=? WHERE id  = ?",
-    [cases.firstname,cases.lastname,cases.email,cases.password,cases.role_id ,cases.line_token,cases.phone,cases.number,cases.moo,cases.soi,cases.provinceId,cases.amphureId,cases.districtsId, id],
+    "UPDATE  users SET shphId = ?,firstname=?,lastname=?,email = ?,password = ? ,role_id = ?,line_token = ? ,phone = ?,number=?,moo=?,soi=?,provinceId=?,amphureId=?,districtsId=? WHERE id  = ?",
+    [cases.shphId,cases.firstname,cases.lastname,cases.email,cases.password,cases.role_id ,cases.line_token,cases.phone,cases.number,cases.moo,cases.soi,cases.provinceId,cases.amphureId,cases.districtsId, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

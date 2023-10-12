@@ -17,6 +17,7 @@ let query = "SELECT * FROM map_history_user_masseuse";
 if (name) {
 query += ` WHERE status = ${name}`;
 }
+query += ' order by no'
 sql.query(query, (err, res) => {
 if (err) {
 result(null, err);

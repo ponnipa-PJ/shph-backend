@@ -1,4 +1,4 @@
-const Data = require("../models/map_history_user_dentist.model.js");
+const Data = require("../models/evaluation.model.js");
 
 exports.create = (req, res) => {
     if (!req.body) {
@@ -8,16 +8,16 @@ exports.create = (req, res) => {
     }
 
     const datas = new Data({
-        no: req.body.no, historyuserdentistId: req.body.historyuserdentistId, name: req.body.name, status: req.body.status,
+        shphId: req.body.shphId, score: req.body.score, suggestion: req.body.suggestion, status: req.body.status,
     });
     Data.create(datas, (err, data) => {
         //console.log(err);
         if (err)
-        res.status(500).send({
-            message:
-                err.message || "Some error occurred while creating the Tutorial."
-        });
-else res.send(data);
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while creating the Tutorial."
+            });
+        else res.send(data);
     });
 };
 
@@ -41,48 +41,6 @@ exports.findOne = (req, res) => {
         } else res.send(data);
     });
 };
-
-
-exports.updateno = (req, res) => {
-    if (!req.body) {
-        res.status(400).send({
-            message: 'Content can not be empty!'
-        });
-    }
-
-    Data.updateno(
-        req.params.id,
-        new Data(req.body),
-        (err, data) => {
-            if (err) {
-                if (err.kind === "not_found") {
-                    res.send([]);
-                }
-            } else res.send(data);
-        }
-    );
-};
-
-exports.updatestatus = (req, res) => {
-    if (!req.body) {
-        res.status(400).send({
-            message: 'Content can not be empty!'
-        });
-    }
-
-    Data.updatestatus(
-        req.params.id,
-        new Data(req.body),
-        (err, data) => {
-            if (err) {
-                if (err.kind === "not_found") {
-                    res.send([]);
-                }
-            } else res.send(data);
-        }
-    );
-};
-
 exports.update = (req, res) => {
     if (!req.body) {
         res.status(400).send({

@@ -36,7 +36,9 @@ module.exports = app => {
   router.get("/getmenu/:id", cases.getmenu);
   // Retrieve a single cases with id
   router.get("/:id", cases.findOne);
+  router.get("/findByadminshphId/:id", cases.findByadminshphId);
 
+  
   // Update a cases with id
   router.put("/:id", cases.update);
 

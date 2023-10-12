@@ -13,6 +13,8 @@ router.get("/getdoctorandshpdentist", datas.getdoctorandshpdentist);
 
 router.get("/getnotdoctors", datas.getnotdoctors);
 
+router.get("/getshphbydoc", datas.getshphbydoc);
+
 router.get("/:id", datas.findOne);
 
 router.put("/:id", datas.update);

@@ -29,15 +29,31 @@ Data.createcolumn = (name, result) => {
 
 
 Data.book = (name, id, shphId, result) => {
+    var list = []
     let query = `SELECT e.id,d.id as docid, d.firstname,d.lastname,e.date FROM events e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus =2 and e.date >= CURDATE() and e.shphId = ${shphId}`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }
+
     // query += ' Group by e.doctorId order by e.date'
     //console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
-            res[r].title = res[r].firstname + ' ' + res[r].lastname
+            if (id) {
+                let check = `SELECT e.* FROM events e WHERE e.date LIKE '%${res[r].date}%' and e.doctorId = ${res[r].docid} and e.shphId = ${shphId} and e.bookstatus = 0`;
+                sql.query(check, (err, checks) => {
+        // console.log(checks.length);
+        if (checks.length < id) {
+            list.push({
+                id:res[r].id,
+                docid:res[r].docid,
+                date:res[r].date,
+                title:res[r].firstname + ' ' + res[r].lastname
+            })
+            // res[r].title = res[r].firstname + ' ' + res[r].lastname
+        }
+                });
+            }
             //     if (res[r].title != 'พักเทียง') {
             //     let query = `SELECT * FROM events WHERE userId = ${id} and date = '${res[r].date}'`;
             //     // console.log(query);
@@ -62,7 +78,7 @@ Data.book = (name, id, shphId, result) => {
         }
         setTimeout(() => {
 
-            result(null, res);
+            result(null, list);
         }, 500);
     });
 };
@@ -295,7 +311,7 @@ Data.geteventbydate = (date, datecurrent, result) => {
 };
 
 Data.deleteevent = (date, id, shphId, result) => {
-    let query = `UPDATE events set status = 0 WHERE doctorId =${id} and bookstatus != 0 and bookstatus != 2 and shphId = ${shphId}`;
+    let query = `UPDATE events set status = 0 WHERE doctorId =${id} and bookstatus != 0 and shphId = ${shphId}`;
     if (date) {
         query += ` and date LIKE '%${date}%'`;
     }

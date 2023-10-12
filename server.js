@@ -16,8 +16,8 @@ var corsOptions = {
     origin: "*"
 };
 
-var link = 'http://localhost:8081'
-// var link = 'https://api.shphQueue.ponnipa.in.th'
+// var link = 'http://localhost:8081'
+var link = 'https://api.shphQueue.ponnipa.in.th'
 
 setInterval(function () {
     axios.get(link + '/api/notification/1')
@@ -63,7 +63,7 @@ setInterval(function () {
                             // console.log(datecurrent,datetoday);
                             var linkconfirm = ''
                             if (datecurrent == datetoday) {
-                                linkconfirm = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้' + link + '/Confirmmasseuse?id=' + res.data[r].id
+                                linkconfirm = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + link + '/Confirmmasseuse?id=' + res.data[r].id
                             }
                             var message = noti.message_chiropractor + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ' + linkconfirm
                             // console.log(message);
@@ -90,10 +90,10 @@ setInterval(function () {
                             // console.log(header);
                             var linkconfirmden = ''
                             if (datecurrent == datedentist) {
-                                linkconfirmden = 'กรุณายืนยันคิวได้ที่ิลิงก์นี้' + link + '/Confirmdentist?id=' + res.data[r].id
+                                linkconfirmden = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + link + '/Confirmdentist?id=' + res.data[r].id
                             }
 
-                            var messagecurrent = noti.message_dentist + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + headercurrent
+                            var messagecurrent = noti.message_dentist + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + headercurrent + ' ' + linkconfirmden
                             // console.log(message);
                             axios.get(link + '/notify?message=' + messagecurrent + '&&token=' + res.data[r].line_token).then(() => {
                             });
@@ -430,6 +430,10 @@ require("./app/routes/map_history_doctor_dentist.routes")(app);
 require("./app/routes/history_doctor_dentist.routes")(app);
 require("./app/routes/history_user_dentist.routes")(app);
 require("./app/routes/dentisttype.routes")(app);
+require("./app/routes/adminshph.routes")(app);
+require("./app/routes/evaluation.routes")(app);
+require("./app/routes/types.routes")(app);
+require("./app/routes/shph_masseuse_time.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

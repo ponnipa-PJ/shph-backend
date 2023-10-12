@@ -30,6 +30,9 @@ exports.create = (req, res) => {
         provinceId:req.body.provinceId,
         amphureId:req.body.amphureId,
         UID:req.body.UID,
+        shphId:req.body.shphId,
+        adminshphId:req.body.adminshphId,
+        
         
     });
     //console.log(cases);
@@ -198,6 +201,23 @@ exports.getmenuarray = (req, res) => {
 };
 exports.getmenu = (req, res) => {
     Case.getmenu(req.params.id, (err, data) => {
+        if (err) {
+            if (err.kind === "not_found") {
+                res.status(404).send({
+                    message: `Not found Tutorial with id ${req.params.id}.`
+                });
+            } else {
+                res.status(500).send({
+                    message: "Error retrieving Tutorial with id " + req.params.id
+                });
+            }
+        } else res.send(data);
+    });
+};
+
+
+exports.findByadminshphId = (req, res) => {
+    Case.findByadminshphId(req.params.id, (err, data) => {
         if (err) {
             if (err.kind === "not_found") {
                 res.status(404).send({
