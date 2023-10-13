@@ -2,6 +2,39 @@ const sql = require("./db");
 const config = require("../config/auth.config");
 var bcrypt = require("bcryptjs");
 var jwt = require("jsonwebtoken");
+const crypto = require("crypto")
+
+const encrypt = (plainText, password) => {
+  try {
+    const iv = crypto.randomBytes(16);
+    const key = crypto.createHash('sha256').update(password).digest('base64').substr(0, 32);
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+
+    let encrypted = cipher.update(plainText);
+    encrypted = Buffer.concat([encrypted, cipher.final()])
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+const decrypt = (encryptedText, password) => {
+  try {
+    const textParts = encryptedText.split(':');
+    const iv = Buffer.from(textParts.shift(), 'hex');
+
+    const encryptedData = Buffer.from(textParts.join(':'), 'hex');
+    const key = crypto.createHash('sha256').update(password).digest('base64').substr(0, 32);
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    
+    const decrypted = decipher.update(encryptedData);
+    const decryptedText = Buffer.concat([decrypted, decipher.final()]);
+    return decryptedText.toString();
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 // constructor
 const Case = function (cases) {
@@ -27,8 +60,10 @@ const Case = function (cases) {
   this.adminshphId = cases.adminshphId
   
 };
+const pass = "gotothemoon2023"
 
 Case.create = (newUser, result) => {
+  const encText = encrypt(newUser.UID, pass)
   const news = [{
     email: newUser.email,
     role_id: newUser.role_id,
@@ -45,7 +80,7 @@ Case.create = (newUser, result) => {
   districtsId : newUser.districtsId,
   amphureId : newUser.amphureId,
   provinceId : newUser.provinceId,
-  UID : newUser.UID,
+  UID : encText,
   shphId:newUser.shphId,
   adminshphId:newUser.adminshphId,
   
@@ -156,8 +191,25 @@ Case.findById = (id, result) => {
 };
 
 Case.signinperson = (req, result) => {
-  console.log(req);
-    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.UID = '${req.UID}'`, (err, res) => {
+  // const decText = encrypt(req.UID, pass)
+  // const decTexts = decrypt(decText, pass)
+  var uid = ''
+  // console.log(decText);
+  // console.log(decTexts);
+  sql.query(`SELECT UID FROM users where UID is not null`, (err, res) => {
+    // console.log(res);
+    for (let r = 0; r < res.length; r++) {
+      // var encryptuid = encrypt(res[r].UID, pass)
+      var decryptuid = decrypt(res[r].UID, pass)
+      // console.log(decryptuid);
+      if (decryptuid == req.UID) {
+        // console.log(res[r]);
+        uid = res[r].UID
+      }
+      
+    }
+    // console.log(uid);
+    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.UID = '${uid}'`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);
@@ -220,6 +272,7 @@ Case.signinperson = (req, result) => {
       result({ kind: "not_found" }, null);
       }
     });
+  });
   };
 
 Case.signin = (req, result) => {
@@ -459,10 +512,25 @@ Case.getdoctor = (name,result) => {
 
 Case.searchUID = (uid, result) => {
   // let query = "SELECT * FROM report";
-  let query = `SELECT u.id,u.firstname,u.lastname,u.UID  FROM users u where u.UID= '${uid}'`;
+  var uiddata = ''
+  sql.query(`SELECT UID FROM users where UID is not null`, (err, res) => {
+    // console.log(res);
+    for (let r = 0; r < res.length; r++) {
+      // var encryptuid = encrypt(res[r].UID, pass)
+      var decryptuid = decrypt(res[r].UID, pass)
+      // console.log(decryptuid);
+      if (decryptuid == uid) {
+        // console.log(res[r]);
+        uiddata = res[r].UID
+      }
+      
+    }
+    if (uiddata) {
+        let query = `SELECT u.id,u.firstname,u.lastname,u.UID  FROM users u where u.UID= '${uiddata}'`;
   
   // console.log(query);
   sql.query(query, (err, res) => {
+    res[0].UID = decrypt(res[0].UID, pass)
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -472,6 +540,10 @@ Case.searchUID = (uid, result) => {
     //console.log("case_types: ", res);
     result(null, res[0]);
   });
+}else{
+  result(null, false);
+}
+});
 };
 
 Case.getAll = (name,roleId,UID, result) => {
@@ -484,8 +556,21 @@ Case.getAll = (name,roleId,UID, result) => {
     query +=  ` and u.role_id = 7`
   }
   if (UID) {
-    query +=  ` and u.UID = ${UID}`
-  }
+  var uid = ''
+  sql.query(`SELECT UID FROM users where UID is not null`, (err, res) => {
+    // console.log(res);
+    for (let r = 0; r < res.length; r++) {
+      // var encryptuid = encrypt(res[r].UID, pass)
+      var decryptuid = decrypt(res[r].UID, pass)
+      // console.log(decryptuid);
+      if (decryptuid == UID) {
+        console.log(res[r]);
+        uid = res[r].UID
+      }
+    }
+    query +=  ` and u.UID = ${uid}`
+  })
+}
   // if (roleId == 3 || roleId == 5) {
   //   query +=  ` where u.role_id = 7`
   // }

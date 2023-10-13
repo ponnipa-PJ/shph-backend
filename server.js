@@ -15,7 +15,7 @@ const app = express();
 var corsOptions = {
     origin: "*"
 };
-
+  
 // var link = 'http://localhost:8081'
 var link = 'https://api.shphQueue.ponnipa.in.th'
 
