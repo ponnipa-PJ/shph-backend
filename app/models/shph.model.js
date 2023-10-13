@@ -36,7 +36,7 @@ Data.getdoctorandshphdentist = (name, result) => {
     };
 
 Data.getdoctorandshphmasseuse = (name, result) => {
-    let query = "SELECT s.name,s.id FROM shph s join events e on s.id = e.shphId where s.status = 1  and e.date >= CURDATE() group by e.shphId";
+    let query = "SELECT s.name,s.id FROM shph s join events e on s.id = e.shphId where s.status = 1 and e.date >= CURDATE() group by e.shphId";
     if (name) {
     query += ` WHERE status = ${name}`;
     }

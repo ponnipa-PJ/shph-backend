@@ -434,6 +434,7 @@ require("./app/routes/adminshph.routes")(app);
 require("./app/routes/evaluation.routes")(app);
 require("./app/routes/types.routes")(app);
 require("./app/routes/shph_masseuse_time.routes")(app);
+require("./app/routes/types_menu.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

@@ -47,6 +47,18 @@ exports.create = (req, res) => {
     });
 };
 
+exports.signinperson = (req, res) => {
+    // Validate request
+    Case.signinperson(req.body, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving Users."
+            });
+        else res.send(data);
+    });
+};
+
 exports.signin = (req, res) => {
     // Validate request
     Case.signin(req.body, (err, data) => {
@@ -174,7 +186,9 @@ exports.searchUID = (req, res) => {
 exports.findAll = (req, res) => {
     const name = req.query.name;
     const roleId = req.query.roleId;
-    Case.getAll(name,roleId, (err, data) => {
+    const UID = req.query.UID;
+    
+    Case.getAll(name,roleId,UID, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

@@ -8,6 +8,8 @@ module.exports = app => {
 
   // Create a new User
   router.post("/signin", cases.signin);
+  
+  router.post("/signinperson", cases.signinperson);
 
   // Retrieve all cases
   router.get("/", cases.findAll);

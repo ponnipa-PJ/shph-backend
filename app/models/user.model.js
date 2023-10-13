@@ -83,22 +83,37 @@ Case.getmenuarray = (id, result) => {
 };
 
 Case.getmenu = (id, result) => {
-  sql.query(`SELECT m.icon,m.name,m.url FROM role_menu rm join menus m on rm.menu_id = m.id WHERE rm.role_id = '${id}' order by m.no`, (err, res) => {
-    if (err) {
-      //console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+  var list = []
+  let header = `SELECT t.icon,t.id,t.name FROM role_menu rm join menus m on rm.menu_id = m.id join types_menu t on m.type_menu_id = t.id WHERE rm.role_id = '${id}' GROUP by t.id;`
+  sql.query(header, (err, headers) => {
+for (let h = 0; h < headers.length; h++) {
+  sql.query(`SELECT m.id,m.icon,m.name,m.url FROM role_menu rm join menus m on rm.menu_id = m.id WHERE rm.role_id = '${id}' and m.type_menu_id = ${headers[h].id} order by m.no`, (err, res) => {
+    // console.log(res);
+    headers[h].url = res[0].url
+    headers[h].menu = res
+    // sql.query(`SELECT m.icon,m.name,m.url FROM role_menu rm join menus m on rm.menu_id = m.id WHERE rm.role_id = '${id}' order by m.no`, (err, res) => {
+      
+    });
+  
+}
+  if (err) {
+    //console.log("error: ", err);
+    result(err, null);
+    return;
+  }
 
-    if (res.length) {
-      //console.log("found casess: ", res);
-      result(null, res);
-      return;
-    }
+  if (headers.length) {
+    //console.log("found casess: ", res);
+    setTimeout(() => {
 
-    // not found Tutorial with the id
-    result({ kind: "not_found" }, null);
-  });
+      result(null, headers);
+  }, 500);
+    return;
+  }
+
+  // not found Tutorial with the id
+  result({ kind: "not_found" }, null);
+});
 };
 
 Case.findByadminshphId = (id, result) => {
@@ -139,6 +154,73 @@ Case.findById = (id, result) => {
     result({ kind: "not_found" }, null);
   });
 };
+
+Case.signinperson = (req, result) => {
+  console.log(req);
+    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.UID = '${req.UID}'`, (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+  
+      if (res.length) {
+        // console.log("found user: ", res[0].password);
+//   console.log(req.password);
+        // console.log(passwordIsValid);
+        if (req.type == 'token') {
+            var token = jwt.sign({ id: res[0].id }, config.secret, {
+                expiresIn: 86400 // 24 hours
+              });
+              data = {
+                id: res[0].id,
+                role_id: res[0].role_id,
+                firstname: res[0].firstname,
+                lastname: res[0].lastname,
+                line_token:res[0].line_token,
+                accessToken:token,
+                email:res[0].email,
+                UID:res[0].UID,
+                shphId:res[0].shphId,
+              }
+              // console.log(data);
+              result(null, data);
+              return;
+        }else{         
+             
+        var passwordIsValid = bcrypt.compareSync(
+            req.password,
+            res[0].password
+          );
+        if (passwordIsValid) {
+          var token = jwt.sign({ id: res[0].id }, config.secret, {
+            expiresIn: 86400 // 24 hours
+          });
+          data = {
+            id: res[0].id,
+            role_id: res[0].role_id,
+            firstname: res[0].firstname,
+            lastname: res[0].lastname,
+            line_token:res[0].line_token,
+            accessToken:token,
+            email:res[0].email,
+            UID:res[0].UID,
+            shphId:res[0].shphId,
+          }
+          // console.log(data);
+          result(null, data);
+          return;
+        }else{
+          result({ kind: "not_found" }, null);
+        }
+    }
+      }else{
+  
+      // not found Tutorial with the id
+      result({ kind: "not_found" }, null);
+      }
+    });
+  };
 
 Case.signin = (req, result) => {
   // console.log(req);
@@ -392,7 +474,7 @@ Case.searchUID = (uid, result) => {
   });
 };
 
-Case.getAll = (name,roleId, result) => {
+Case.getAll = (name,roleId,UID, result) => {
   // let query = "SELECT * FROM report";
   let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
   if (name) {
@@ -401,11 +483,14 @@ Case.getAll = (name,roleId, result) => {
   if (roleId == 1) {
     query +=  ` and u.role_id = 7`
   }
+  if (UID) {
+    query +=  ` and u.UID = ${UID}`
+  }
   // if (roleId == 3 || roleId == 5) {
   //   query +=  ` where u.role_id = 7`
   // }
   query += ` order by r.no,u.id`;
-  console.log(query);
+  // console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
