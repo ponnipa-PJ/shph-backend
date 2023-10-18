@@ -546,7 +546,7 @@ Case.searchUID = (uid, result) => {
 });
 };
 
-Case.getAll = (name,roleId,UID, result) => {
+Case.getAll = (name,roleId,UID,userId, result) => {
   // let query = "SELECT * FROM report";
   let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
   if (name) {
@@ -554,6 +554,9 @@ Case.getAll = (name,roleId,UID, result) => {
   }
   if (roleId == 1) {
     query +=  ` and u.role_id = 7`
+  }
+  if (userId) {
+    query +=  ` and u.shphId = ${userId} and u.role_id != 2 and u.role_id != 5`
   }
   if (UID) {
   var uid = ''

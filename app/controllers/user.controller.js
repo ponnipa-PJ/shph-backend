@@ -187,8 +187,8 @@ exports.findAll = (req, res) => {
     const name = req.query.name;
     const roleId = req.query.roleId;
     const UID = req.query.UID;
-    
-    Case.getAll(name,roleId,UID, (err, data) => {
+    const userId = req.query.userId;
+    Case.getAll(name,roleId,UID,userId, (err, data) => {
         if (err)
             res.status(500).send({
                 message:
