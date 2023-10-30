@@ -546,8 +546,85 @@ Case.searchUID = (uid, result) => {
 });
 };
 
+Case.getUID = (UID, result) => {
+  // let query = "SELECT * FROM report";
+  var list = []
+  let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
+  if (UID) {
+    query += ` and u.id = ${UID}`
+}
+  // console.log(query);
+  sql.query(query, (err, res) => {
+
+  var decryptuid = decrypt(res[0].UID, pass)
+  // console.log(decryptuid);
+  res[0].UID = decryptuid
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    //console.log("case_types: ", res);
+    setTimeout(() => {
+
+      result(null, res[0]);
+  }, 500);
+
+  });
+};
+
+Case.checkUID = (UID, result) => {
+  // let query = "SELECT * FROM report";
+  var list = []
+  let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
+  if (UID) {
+  var uid = ''
+  sql.query(`SELECT id,UID FROM users where UID is not null`, (err, res) => {
+    // console.log(res);
+    for (let r = 0; r < res.length; r++) {
+      // var encryptuid = encrypt(res[r].UID, pass)
+      var decryptuid = decrypt(res[r].UID, pass)
+      // console.log('decryptuid',decryptuid);
+      // console.log(UID);
+      if (decryptuid == UID) {
+        // console.log(res[r]);
+        uid = res[r].id
+        let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
+
+        query +=  ` and u.id = ${uid}`
+        // console.log(query);
+        sql.query(query, (err, lists) => {
+          // console.log(lists);
+          list = lists
+        });
+      }
+    }
+  })
+}
+  query += ` order by r.no,u.id`;
+  // console.log(query);
+  sql.query(query, (err, res) => {
+    // console.log(UID);
+    // console.log(list);
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    //console.log("case_types: ", res);
+    setTimeout(() => {
+
+      result(null, list);
+  }, 500);
+
+  });
+};
+
 Case.getAll = (name,roleId,UID,userId, result) => {
   // let query = "SELECT * FROM report";
+  var list = []
   let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
   if (name) {
     query += ` and u.email = '${name}'`;
@@ -558,27 +635,8 @@ Case.getAll = (name,roleId,UID,userId, result) => {
   if (userId) {
     query +=  ` and u.shphId = ${userId} and u.role_id != 2 and u.role_id != 5`
   }
-  if (UID) {
-  var uid = ''
-  sql.query(`SELECT UID FROM users where UID is not null`, (err, res) => {
-    // console.log(res);
-    for (let r = 0; r < res.length; r++) {
-      // var encryptuid = encrypt(res[r].UID, pass)
-      var decryptuid = decrypt(res[r].UID, pass)
-      // console.log(decryptuid);
-      if (decryptuid == UID) {
-        console.log(res[r]);
-        uid = res[r].UID
-      }
-    }
-    query +=  ` and u.UID = ${uid}`
-  })
-}
-  // if (roleId == 3 || roleId == 5) {
-  //   query +=  ` where u.role_id = 7`
-  // }
   query += ` order by r.no,u.id`;
-  // console.log(query);
+  console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -587,9 +645,14 @@ Case.getAll = (name,roleId,UID,userId, result) => {
     }
 
     //console.log("case_types: ", res);
-    result(null, res);
+    setTimeout(() => {
+
+      result(null, res);
+  }, 500);
+
   });
 };
+
 Case.updatetokenline = (id, datas, result) => {
   // console.log(id);
   sql.query(

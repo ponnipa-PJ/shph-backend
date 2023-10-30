@@ -435,6 +435,9 @@ require("./app/routes/evaluation.routes")(app);
 require("./app/routes/types.routes")(app);
 require("./app/routes/shph_masseuse_time.routes")(app);
 require("./app/routes/types_menu.routes")(app);
+require("./app/routes/making_appointments.routes")(app);
+require("./app/routes/locations.routes")(app);
+require("./app/routes/appointments.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

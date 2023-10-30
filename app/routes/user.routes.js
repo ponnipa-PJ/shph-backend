@@ -13,6 +13,11 @@ module.exports = app => {
 
   // Retrieve all cases
   router.get("/", cases.findAll);
+
+  router.get("/getUID", cases.getUID);
+
+  router.get("/checkUID", cases.checkUID);
+
   router.get("/searchUID", cases.searchUID);
 
   router.get("/getdoctor", cases.getdoctor);

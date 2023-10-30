@@ -1,3 +1,4 @@
+const e = require("express");
 const sql = require("./db");
 
 const Data = function (datas) {
@@ -350,18 +351,36 @@ Data.deleteevent = (date, id, shphId, result) => {
         result(null, res);
     });
 };
-Data.getAll = (name, id, shphId, result) => {
+Data.getAll = (name, id, shphId,userId, result) => {
     var list = []
-    let query = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.bookstatus = 2 and e.doctorId =${id} and e.date >= CURDATE() and e.shphId = ${shphId}`;
+    let query = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.doctorId =${id} and e.date >= CURDATE()`;
     if (name) {
         query += ` and e.date LIKE '%${name}%'`;
     }
-    // console.log(query);
+    if (shphId) {
+        query += ` and e.shphId = ${shphId} and e.bookstatus = 2 and e.status !=0 `
+    }
+
+    if (userId != 0) {
+        query += ` and e.bookstatus != 2 and (e.userId = 15 or e.userId is null)`
+    }else{
+        query += ` and e.bookstatus != 2 and e.userId is null`
+    }
+    console.log(userId);
+    console.log(query);
     sql.query(query, (err, res) => {
         // console.log(res);
         for (let r = 0; r < res.length; r++) {
-            let event = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.status !=0 and e.doctorId =${id} and e.date >= CURDATE() and e.shphId = ${shphId} and e.date LIKE '%${res[r].date}%' and e.userId is null`;
+            let event = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.doctorId =${id} and e.date >= CURDATE() and e.date LIKE '%${res[r].date}%'`;
             //    console.log(event);
+            if (shphId) {
+                event = ` and e.shphId = ${shphId} and e.status !=0 `
+            }
+            if (userId != 0) {
+                event += ` and (e.userId = 15 or e.userId is null)`
+            }else{
+                event += ` and e.bookstatus != 2 and e.userId is null`
+            }
             sql.query(event, (err, events) => {
                 for (let e = 0; e < events.length; e++) {
 

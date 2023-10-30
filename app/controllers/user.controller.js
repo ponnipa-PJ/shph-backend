@@ -182,6 +182,30 @@ exports.searchUID = (req, res) => {
 };
 
 
+exports.getUID = (req, res) => {
+    const UID = req.query.UID;
+    Case.getUID(UID, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving tutorials."
+            });
+        else res.send(data);
+    });
+};
+
+exports.checkUID = (req, res) => {
+    const UID = req.query.UID;
+    Case.checkUID(UID, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving tutorials."
+            });
+        else res.send(data);
+    });
+};
+
 // Retrieve all Tutorials from the database (with condition).
 exports.findAll = (req, res) => {
     const name = req.query.name;

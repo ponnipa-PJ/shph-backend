@@ -1,4 +1,4 @@
-const Data = require("../models/map_events.model.js");
+const Data = require("../models/making_appointments.model.js");
 
 exports.create = (req, res) => {
 if (!req.body) {
@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-date:req.body.date,shphId:req.body.shphId,eventId:req.body.eventId,userId:req.body.userId,createdBy:req.body.createdBy,doctorId:req.body.doctorId,typebook:req.body.typebook,time:req.body.time,type:req.body.type});
+mapeventId:req.body.mapeventId,typeappointmentId:req.body.typeappointmentId,locationId:req.body.locationId,date:req.body.date,time:req.body.time,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -19,12 +19,10 @@ else res.send(data);
 });
 };
 
-exports.geteventbycreatedBy = (req, res) => {
-    const date = req.query.date;
-    const id = req.query.id;
-    const userid = req.query.userid;
-    const shphId = req.query.shphId;
-    Data.geteventbycreatedBy(date,id,userid,shphId, (err, data) => {
+exports.getreportdoctor = (req, res) => {
+    const userId = req.query.userId;
+    const doctorId = req.query.doctorId;
+    Data.getreportdoctor(userId,doctorId, (err, data) => {
     if (err)
     res.status(500).send({
     message:
@@ -33,6 +31,18 @@ exports.geteventbycreatedBy = (req, res) => {
     else res.send(data);
     });
     };
+     
+    exports.getreport = (req, res) => {
+        const name = req.query.name;
+        Data.getreport(name, (err, data) => {
+        if (err)
+        res.status(500).send({
+        message:
+        err.message || "Some error occurred while retrieving table."
+        });
+        else res.send(data);
+        });
+        };
 
 exports.findAll = (req, res) => {
 const name = req.query.name;
@@ -45,17 +55,6 @@ err.message || "Some error occurred while retrieving table."
 else res.send(data);
 });
 };
-
-exports.findbyuserId = (req, res) => {
-    Data.findbyuserId(req.params.id, (err, data) => {
-    if (err) {
-    if (err.kind === "not_found") {
-    res.send([])
-    }
-    } else res.send(data);
-    });
-    };
-
 exports.findOne = (req, res) => {
 Data.findById(req.params.id, (err, data) => {
 if (err) {
