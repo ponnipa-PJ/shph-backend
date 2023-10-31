@@ -11,6 +11,8 @@ module.exports = app => {
 
     router.get("/:id", datas.findOne);
 
+    router.get("/findbyuserId/:id", datas.findbyuserId);
+
     router.put("/:id", datas.update);
 
     router.delete("/:id", datas.delete);

@@ -177,7 +177,7 @@ if (doc.length > 0) {
             });
             };
     Data.getdoctorbydate = (date,id,doctor,shphId,type, result) => {
-        console.log(type);
+        // console.log(type);
         var doctorlist = JSON.parse(doctor)
         var strdoc = ''
         for (let d = 0; d < doctorlist.length; d++) {
@@ -197,7 +197,7 @@ if (doc.length > 0) {
         // query += strdoc
         query += ` and e.date = '${date}' GROUP BY e.doctorId`;
         }
-        console.log(query);
+        // console.log(query);
         sql.query(query, (err, res) => {
             // for (let r = 0; r < res.length; r++) {
             //     console.log(res[r].date);
@@ -232,38 +232,26 @@ if (doc.length > 0) {
         });
         };
 
-Data.getAll = (name,id,shphId, result) => { 
-let query = `SELECT e.*,m.id as groupId FROM eventsdentist e left join map_events_dentist m on e.id = m.eventId WHERE e.status !=0 and e.doctorId = ${id} and e.shphId = ${shphId} and e.date >= CURDATE()`;
+Data.getAll = (name,id,shphId,userId, result) => { 
+let query = `SELECT e.*,m.id as groupId FROM eventsdentist e left join map_events_dentist m on e.id = m.eventId WHERE e.doctorId = ${id} and e.date >= CURDATE()`;
 if (name) {
 query += ` and e.date LIKE '%${name}%'`;
 }
+if (shphId) {
+    query += ` and e.shphId = ${shphId} and e.status !=0 `
+}
 
+if (userId != 0) {
+    query += ` and e.bookstatus != 2 and (e.userId = ${userId} or e.userId is null)`
+}else if (userId == 0) {
+    query += ` and e.bookstatus != 2 and e.userId is null`
+}
+if (shphId) {
+    query = query.replace('and e.bookstatus != 2','')
+}
+// console.log(query);
 sql.query(query, (err, res) => {
-    // for (let r = 0; r < res.length; r++) {
-    //     console.log(res[r].date);
-    //     var d = new Date(res[r].date)
-    //     console.log(d);
-    //     day = (d.getDate()).toString().padStart(2, "0");
-    //     month = (d.getMonth() + 1).toString().padStart(2, "0");
-    // year =   d.getFullYear()
-    // hour = (d.getHours()).toString().padStart(2, "0");
-    // minute = (d.getMinutes()).toString().padStart(2, "0");
-    // second = (d.getSeconds()).toString().padStart(2, "0");
-    // console.log(d.getTime());     
-    // console.log(day);   
-    // console.log(month);   
-    // console.log(year);  
-    // console.log(hour);
-    // console.log(minute);
-    // console.log(second);
-    // if (hour == 00 && minute ==00 && second ==00) {
-    //     date = year+'-'+month+'-'+day
-    // }else{
-    //     // date = "2023-09-25T06:00:00+07:00"
-    //     date = year+'-'+month+'-'+day+'T'+hour+':'+minute+':'+second+'+07:00'
-    // }
-    // res[r].date =  date
-    // }
+   
 if (err) {
 result(null, err);
 return;

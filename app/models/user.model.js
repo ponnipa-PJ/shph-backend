@@ -117,6 +117,31 @@ Case.getmenuarray = (id, result) => {
   });
 };
 
+Case.getmenuuser = (id, result) => {
+  var list = []
+  let header = `SELECT m.id,m.icon,m.name,m.url FROM role_menu rm join menus m on rm.menu_id = m.id WHERE rm.role_id = '${id}' order by m.no`
+  sql.query(header, (err, headers) => {
+
+  if (err) {
+    //console.log("error: ", err);
+    result(err, null);
+    return;
+  }
+
+  if (headers.length) {
+    //console.log("found casess: ", res);
+    setTimeout(() => {
+
+      result(null, headers);
+  }, 500);
+    return;
+  }
+
+  // not found Tutorial with the id
+  result({ kind: "not_found" }, null);
+});
+};
+
 Case.getmenu = (id, result) => {
   var list = []
   let header = `SELECT t.icon,t.id,t.name FROM role_menu rm join menus m on rm.menu_id = m.id join types_menu t on m.type_menu_id = t.id WHERE rm.role_id = '${id}' GROUP by t.id;`

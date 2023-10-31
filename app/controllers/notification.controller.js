@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-message_chiropractor:req.body.message_chiropractor,cancel_chiropractor:req.body.cancel_chiropractor,message_dentist:req.body.message_dentist,cancel_dentist:req.body.cancel_dentist,day:req.body.day,time:req.body.time,hour:req.body.hour,no_dentist:req.body.no_dentist,no_masseuse_worker:req.body.no_masseuse_worker,no_dentist_worker:req.body.no_dentist_worker,});
+    title:req.body.title,message_chiropractor:req.body.message_chiropractor,cancel_chiropractor:req.body.cancel_chiropractor,message_dentist:req.body.message_dentist,cancel_dentist:req.body.cancel_dentist,day:req.body.day,time:req.body.time,hour:req.body.hour,no_dentist:req.body.no_dentist,no_masseuse_worker:req.body.no_masseuse_worker,no_dentist_worker:req.body.no_dentist_worker,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({

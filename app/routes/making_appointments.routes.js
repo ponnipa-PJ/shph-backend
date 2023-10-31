@@ -11,7 +11,11 @@ router.get("/getreport", datas.getreport);
 
 router.get("/getreportdoctor", datas.getreportdoctor);
 
+router.get("/getreportdoctordentist", datas.getreportdoctordentist);
+
 router.get("/:id", datas.findOne);
+
+router.get("/findOnedentist/:id", datas.findOnedentist);
 
 router.put("/:id", datas.update);
 

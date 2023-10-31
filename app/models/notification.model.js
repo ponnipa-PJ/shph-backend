@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.message_chiropractor=datas.message_chiropractor;this.cancel_chiropractor=datas.cancel_chiropractor;this.message_dentist=datas.message_dentist;this.cancel_dentist=datas.cancel_dentist;this.day=datas.day;this.time=datas.time;this.hour=datas.hour;this.no_dentist=datas.no_dentist;this.no_masseuse_worker=datas.no_masseuse_worker;this.no_dentist_worker=datas.no_dentist_worker;};
+    this.title=datas.title;this.message_chiropractor=datas.message_chiropractor;this.cancel_chiropractor=datas.cancel_chiropractor;this.message_dentist=datas.message_dentist;this.cancel_dentist=datas.cancel_dentist;this.day=datas.day;this.time=datas.time;this.hour=datas.hour;this.no_dentist=datas.no_dentist;this.no_masseuse_worker=datas.no_masseuse_worker;this.no_dentist_worker=datas.no_dentist_worker;};
 Data.create = (newData, result) => {
 sql.query("INSERT INTO notification SET ?", newData, (err, res) => {
 if (err) {
@@ -41,8 +41,8 @@ result({ kind: "not_found" }, null);
 
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE notification SET day = ?,time = ?,hour = ?,no_dentist=?,message_chiropractor=?,cancel_chiropractor=?,message_dentist=?,cancel_dentist=?,no_masseuse_worker=?,no_dentist_worker=? WHERE id = ?",
-[datas.day,datas.time,datas.hour,datas.no_dentist,datas.message_chiropractor,datas.cancel_chiropractor,datas.message_dentist,datas.cancel_dentist,datas.no_masseuse_worker,datas.no_dentist_worker,id],(err, res) => {
+"UPDATE notification SET title = ?,day = ?,time = ?,hour = ?,no_dentist=?,message_chiropractor=?,cancel_chiropractor=?,message_dentist=?,cancel_dentist=?,no_masseuse_worker=?,no_dentist_worker=? WHERE id = ?",
+[datas.title,datas.day,datas.time,datas.hour,datas.no_dentist,datas.message_chiropractor,datas.cancel_chiropractor,datas.message_dentist,datas.cancel_dentist,datas.no_masseuse_worker,datas.no_dentist_worker,id],(err, res) => {
 if (err) {
 result(null, err);
 return;

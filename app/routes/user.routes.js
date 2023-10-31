@@ -41,6 +41,9 @@ module.exports = app => {
 
   // Retrieve a single cases with id
   router.get("/getmenu/:id", cases.getmenu);
+
+  router.get("/getmenuuser/:id", cases.getmenuuser);
+
   // Retrieve a single cases with id
   router.get("/:id", cases.findOne);
   router.get("/findByadminshphId/:id", cases.findByadminshphId);

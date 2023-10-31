@@ -45,6 +45,17 @@ err.message || "Some error occurred while retrieving table."
 else res.send(data);
 });
 };
+
+exports.findbyuserId = (req, res) => {
+    Data.findbyuserId(req.params.id, (err, data) => {
+    if (err) {
+    if (err.kind === "not_found") {
+    res.send([])
+    }
+    } else res.send(data);
+    });
+    };
+
 exports.findOne = (req, res) => {
 Data.findById(req.params.id, (err, data) => {
 if (err) {

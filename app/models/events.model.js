@@ -351,6 +351,125 @@ Data.deleteevent = (date, id, shphId, result) => {
         result(null, res);
     });
 };
+
+Data.geteventappoint = (name, id, shphId,userId, result) => {
+    // console.log(name);
+    var list = []
+    var eventId= ''
+    let query = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.doctorId =${id} and e.date >= CURDATE()`;
+    if (name) {
+        var event = JSON.parse("[" + name + "]");
+        for (let e = 0; e < event.length; e++) {
+            eventId += ' e.id = ' + event[e] + ' or '
+        }
+        eventId = eventId.slice(0, -3);
+    }
+    // console.log(eventId);
+    if (shphId) {
+        query += ` and e.shphId = ${shphId} and e.status !=0 and e.bookstatus = 2 `
+    }
+    if (userId != 0) {
+        query += ` and (${eventId} or e.userId is null) and e.bookstatus = 2`
+    }else if (userId == 0) {
+        query += ` and e.bookstatus != 2 and e.userId is null`
+    }
+
+    if (shphId) {
+        query = query.replace('and e.bookstatus != 2','')
+    }
+    // console.log(userId);
+    // console.log(query);
+    sql.query(query, (err, res) => {
+        // console.log(res);
+        for (let r = 0; r < res.length; r++) {
+            let event = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.doctorId =${id} and e.date >= CURDATE() and e.date LIKE '%${res[r].date}%'`;
+            //    console.log(event);
+            if (shphId) {
+                event += ` and e.shphId = ${shphId} and e.status !=0 `
+            }
+            if (userId != 0) {
+                event += ` and (${eventId} or e.userId is null) and e.bookstatus != 2`
+            }else if (userId == 0) {
+                event += ` and e.bookstatus != 2 and e.userId is null`
+            }
+            // console.log(event);
+            if (shphId) {
+                event = event.replace('and e.bookstatus != 2','')
+            }
+            // console.log(event);
+            sql.query(event, (err, events) => {
+                for (let e = 0; e < events.length; e++) {
+
+                    list.push(events[e])
+
+                }
+            })
+            let eventbookall = `SELECT m.* FROM map_events m WHERE m.date = '${res[r].date}' and m.status = 1`;
+            //    console.log(event);
+            // sql.query(eventbookall, (err, eventbookalls) => {
+            //     var arrevent =[]
+            //     var data = {} 
+            //     for (let b = 0; b < eventbookalls.length; b++) {
+            //          arrevent = JSON.parse(eventbookalls[b].eventId)
+            //         // console.log(arrevent);
+            //         // console.log(arrevent.length);
+            //         for (let arr = 0; arr < arrevent.length; arr++) {
+            //             // console.log(arrevent[arr]);
+            //             let eventnotnull = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.id = ${arrevent[arr]}`;
+            //             // console.log(eventnotnull);
+            //             sql.query(eventnotnull, (err, eventsnotnull) => {
+            //                 // console.log(arr);
+            //                 var l = JSON.parse(eventbookalls[b].eventId)
+            //                 if (arr==0) {
+            //                     data = eventsnotnull[0]
+            //                     data.groupId = eventbookalls[b].id
+            //                 }
+            //                 if (arr+1 == l.length) {
+            //                     // console.log(eventsnotnull[0].date);
+            //                     // console.log(l.length);
+            //                     data.end = eventsnotnull[0].date
+            //                     data.groupId = eventbookalls[b].id
+            //                     list.push(data)
+            //                 }
+            //             })
+            //             // console.log(arr);
+                        
+            //             // if (arr == 0) {
+            //             //     date = eventsnotnull[0]
+            //             // }
+            //             // // console.log(date);
+            //             // if (arr + 1 == eventbookalls.length) {
+            //             //     date.end = eventsnotnull[o]
+            //             //     // console.log(date);
+
+            //             // }
+            //             // if (b + 1 == eventbookalls.length) {
+
+            //             //     list.push(date)
+            //             // }
+                            
+            //             // if (arr+1 == arrevent.length) {
+            //             //     console.log(data);
+            //             //     console.log(1);
+            //             //     list.push(data)
+            //             // }
+            //         }
+
+            //     }
+
+            // });
+        }
+        if (err) {
+            result(null, err);
+            return;
+        }
+        setTimeout(() => {
+            // console.log(list);
+            result(null, list);
+        }, 500);
+    });
+};
+
 Data.getAll = (name, id, shphId,userId, result) => {
     var list = []
     let query = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.doctorId =${id} and e.date >= CURDATE()`;
@@ -358,29 +477,37 @@ Data.getAll = (name, id, shphId,userId, result) => {
         query += ` and e.date LIKE '%${name}%'`;
     }
     if (shphId) {
-        query += ` and e.shphId = ${shphId} and e.bookstatus = 2 and e.status !=0 `
+        query += ` and e.shphId = ${shphId} and e.status !=0 and e.bookstatus = 2 `
     }
-
     if (userId != 0) {
-        query += ` and e.bookstatus != 2 and (e.userId = 15 or e.userId is null)`
-    }else{
+        query += ` and e.bookstatus != 2 and (e.userId = ${userId} or e.userId is null)`
+    }else if (userId == 0) {
         query += ` and e.bookstatus != 2 and e.userId is null`
     }
-    console.log(userId);
-    console.log(query);
+
+    if (shphId) {
+        query = query.replace('and e.bookstatus != 2','')
+    }
+    // console.log(userId);
+    // console.log(query);
     sql.query(query, (err, res) => {
         // console.log(res);
         for (let r = 0; r < res.length; r++) {
             let event = `SELECT e.* FROM events e left join users u on e.userId = u.id WHERE e.doctorId =${id} and e.date >= CURDATE() and e.date LIKE '%${res[r].date}%'`;
             //    console.log(event);
             if (shphId) {
-                event = ` and e.shphId = ${shphId} and e.status !=0 `
+                event += ` and e.shphId = ${shphId} and e.status !=0 `
             }
             if (userId != 0) {
-                event += ` and (e.userId = 15 or e.userId is null)`
-            }else{
+                event += ` and e.bookstatus != 2 and (e.userId = ${userId} or e.userId is null)`
+            }else if (userId == 0) {
                 event += ` and e.bookstatus != 2 and e.userId is null`
             }
+            // console.log(event);
+            if (shphId) {
+                event = event.replace('and e.bookstatus != 2','')
+            }
+            // console.log(event);
             sql.query(event, (err, events) => {
                 for (let e = 0; e < events.length; e++) {
 
@@ -392,7 +519,7 @@ Data.getAll = (name, id, shphId,userId, result) => {
             //    console.log(event);
             sql.query(eventbookall, (err, eventbookalls) => {
                 var arrevent =[]
-                var data = {}
+                var data = {} 
                 for (let b = 0; b < eventbookalls.length; b++) {
                      arrevent = JSON.parse(eventbookalls[b].eventId)
                     // console.log(arrevent);

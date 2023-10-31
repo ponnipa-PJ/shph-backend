@@ -302,13 +302,14 @@ app.get("/notifyconfirm", (req, res) => {
 });
 
 app.get("/gettoken", (req, res) => {
+    console.log(req.query.code,);
     const url = 'https://notify-bot.line.me/oauth/token'
     // var valclient_id= String(process.env.client_id);
     //     var valclient_secret= String(process.env.client_secret);
     axios.post(url, {
         grant_type: 'authorization_code',
         code: req.query.code,
-        redirect_uri: 'https://hpkmaeka.com/line',
+        redirect_uri: 'https://www.hpkmaeka.com/line',
         // redirect_uri: 'http://localhost:8082/line',
         client_id: 'do6mzoSxLMNnOTXkr7USva',
         client_secret: 'jjabdUGaLBeOkdDE8sexPwLr8hw5N0fuDFQtGEXPNyD',
@@ -316,7 +317,7 @@ app.get("/gettoken", (req, res) => {
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         // data: JSON.stringify(jsonData),
     }).then(response => {
-        // console.log(response)
+        console.log(response)
         res.json(response.data.access_token)
     })
         .catch(error => {

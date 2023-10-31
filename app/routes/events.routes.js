@@ -7,6 +7,8 @@ router.post("/", datas.create);
 
 router.get("/deleteevent", datas.deleteevent);
 router.get("/", datas.findAll);
+router.get("/geteventappoint", datas.geteventappoint);
+
 router.get("/geteventbydate", datas.geteventbydate);
 router.get("/createcolumn", datas.createcolumn);
 

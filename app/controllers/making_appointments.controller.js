@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-mapeventId:req.body.mapeventId,typeappointmentId:req.body.typeappointmentId,locationId:req.body.locationId,date:req.body.date,time:req.body.time,});
+    mapeventdentistId:req.body.mapeventdentistId,mapeventId:req.body.mapeventId,typeappointmentId:req.body.typeappointmentId,locationId:req.body.locationId,date:req.body.date,time:req.body.time,});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -18,6 +18,20 @@ err.message || "Some error occurred while creating the Tutorial."
 else res.send(data);
 });
 };
+
+
+exports.getreportdoctordentist = (req, res) => {
+    const userId = req.query.userId;
+    const doctorId = req.query.doctorId;
+    Data.getreportdoctordentist(userId,doctorId, (err, data) => {
+    if (err)
+    res.status(500).send({
+    message:
+    err.message || "Some error occurred while retrieving table."
+    });
+    else res.send(data);
+    });
+    };
 
 exports.getreportdoctor = (req, res) => {
     const userId = req.query.userId;
@@ -55,6 +69,17 @@ err.message || "Some error occurred while retrieving table."
 else res.send(data);
 });
 };
+
+exports.findOnedentist = (req, res) => {
+    Data.findOnedentist(req.params.id, (err, data) => {
+    if (err) {
+    if (err.kind === "not_found") {
+    res.send([])
+    }
+    } else res.send(data);
+    });
+    };
+
 exports.findOne = (req, res) => {
 Data.findById(req.params.id, (err, data) => {
 if (err) {

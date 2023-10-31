@@ -144,7 +144,8 @@ exports.findAll = (req, res) => {
 const name = req.query.name;
 const id = req.query.id;
 const shphId = req.query.shphId;
-Data.getAll(name,id,shphId, (err, data) => {
+const userId = req.query.userId;
+Data.getAll(name,id,shphId,userId, (err, data) => {
 if (err)
 res.status(500).send({
 message:

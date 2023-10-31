@@ -159,6 +159,21 @@ exports.book = (req, res) => {
                 else res.send(data);
                 });
                 };
+                
+                exports.geteventappoint = (req, res) => {
+                    const name = req.query.name;
+                    const id = req.query.id;
+                    const shphId = req.query.shphId;
+                    const userId = req.query.userId;
+                    Data.geteventappoint(name,id,shphId,userId, (err, data) => {
+                    if (err)
+                    res.status(500).send({
+                    message:
+                    err.message || "Some error occurred while retrieving table."
+                    });
+                    else res.send(data);
+                    });
+                    };
 
 exports.findAll = (req, res) => {
 const name = req.query.name;

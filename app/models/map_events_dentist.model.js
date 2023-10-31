@@ -75,6 +75,21 @@ return;
 result(null, res);
 });
 };
+
+Data.findbyuserId = (id, result) => {
+    sql.query(`SELECT m.type,m.date,u.UID,m.userId,m.id as eventId,m.eventId as eventIdlist,m.typebook,h.*,u.firstname,u.lastname,m.time FROM map_events_dentist m join users u on m.userId = u.id join history_user_dentist h on h.eventId = m.id WHERE m.userId = ${id} order by m.date,m.time desc`, (err, res) => {
+    if (err) {
+    result(err, null);
+    return;
+    }
+    if (res.length) {
+    result(null, res[0]);
+    return;
+    }
+    result({ kind: "not_found" }, null);
+    });
+    };
+
 Data.findById = (id, result) => {
 sql.query(`SELECT m.type,m.doctorId,m.date,u.UID,m.userId,m.id as eventId,m.eventId as eventIdlist,m.typebook,h.*,u.firstname,u.lastname,m.time FROM map_events_dentist m join users u on m.userId = u.id join history_user_dentist h on h.eventId = m.id WHERE m.id = ${id}`, (err, res) => {
 if (err) {
