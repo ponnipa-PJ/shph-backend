@@ -636,7 +636,7 @@ Case.getAll = (name,roleId,UID,userId, result) => {
     query +=  ` and u.shphId = ${userId} and u.role_id != 2 and u.role_id != 5`
   }
   query += ` order by r.no,u.id`;
-  console.log(query);
+  // console.log(query);
   sql.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);

@@ -17,7 +17,7 @@ var corsOptions = {
 };
   
 // var link = 'http://localhost:8081'
-var link = 'https://api.shphQueue.ponnipa.in.th'
+var link = 'https://api.hpkmaeka.com'
 
 setInterval(function () {
     axios.get(link + '/api/notification/1')
@@ -308,7 +308,7 @@ app.get("/gettoken", (req, res) => {
     axios.post(url, {
         grant_type: 'authorization_code',
         code: req.query.code,
-        redirect_uri: 'https://shphqueue.ponnipa.in.th/line',
+        redirect_uri: 'https://hpkmaeka.com/line',
         // redirect_uri: 'http://localhost:8082/line',
         client_id: 'do6mzoSxLMNnOTXkr7USva',
         client_secret: 'jjabdUGaLBeOkdDE8sexPwLr8hw5N0fuDFQtGEXPNyD',
