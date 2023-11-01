@@ -56,14 +56,14 @@ Data.signin = (req, result) => {
     };
 
 Data.getAll = (name,adminId, result) => {
-let query = "SELECT * FROM adminshph";
+let query = "SELECT a.*,r.name as role,s.name as shph FROM adminshph a join roles r on a.type = r.id join shph s on a.shphId = s.id";
 if (adminId) {
-    query += ` WHERE adminId = ${adminId}`;
+    query += ` WHERE a.adminId = ${adminId}`;
 }
 if (name) {
-query += ` WHERE status = ${name}`;
+query += ` and a.status = ${name}`;
 }
-query += ` order by username`;
+query += ` order by a.id`;
 sql.query(query, (err, res) => {
 if (err) {
 result(null, err);
@@ -91,8 +91,8 @@ Data.updateById = (id, datas, result) => {
         datas.password = bcrypt.hashSync(datas.password, 8)
       }
 sql.query(
-"UPDATE adminshph SET password = ?,type =?  WHERE id = ?",
-[datas.password,datas.type,id],(err, res) => {
+"UPDATE adminshph SET password = ?,type =? ,shphId=? WHERE id = ?",
+[datas.password,datas.type,datas.shphId,id],(err, res) => {
 if (err) {
 result(null, err);
 return;
@@ -105,6 +105,8 @@ return;
 );
 };
 Data.remove = (id,status, result) => {
+  // console.log(status,id);
+  // console.log(`UPDATE adminshph set status = ${status} WHERE id = ${id}`);
 sql.query(
 `UPDATE adminshph set status = ${status} WHERE id = ?`,id, (err, res) => {
 if (err) {
