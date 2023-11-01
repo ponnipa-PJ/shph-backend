@@ -23,7 +23,7 @@ result(null, { id: res.insertId, ...data });
 
 Data.signin = (req, result) => {
     //console.log(req);
-      sql.query(`SELECT * FROM adminshph WHERE username = '${req.email}'`, (err, res) => {
+      sql.query(`SELECT * FROM adminshph WHERE username = '${req.UID}'`, (err, res) => {
         if (err) {
           //console.log("error: ", err);
           result(err, null);
@@ -55,7 +55,7 @@ Data.signin = (req, result) => {
       });
     };
 
-Data.getAll = (name,adminId, result) => {
+Data.getAll = (name,adminId,role, result) => {
 let query = "SELECT a.*,r.name as role,s.name as shph FROM adminshph a join roles r on a.type = r.id join shph s on a.shphId = s.id";
 if (adminId) {
     query += ` WHERE a.adminId = ${adminId}`;
@@ -63,6 +63,9 @@ if (adminId) {
 if (name) {
 query += ` and a.status = ${name}`;
 }
+if (role !=0) {
+  query += ` and a.type = ${role}`;
+  }
 query += ` order by a.id`;
 sql.query(query, (err, res) => {
 if (err) {

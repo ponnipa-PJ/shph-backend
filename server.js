@@ -363,19 +363,14 @@ app.post('/uploadimage', (req, res) => {
     // accessing the file
     const myFile = req.files.file;
     var name = req.query.name
-    var type = req.query.type
-    var dir = './uploads/' + type
     //  mv() method places the file inside public directory
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir);
-    }
-    myFile.mv(`${__dirname}/uploads/${type}/${name}`, function (err) {
+    myFile.mv(`${__dirname}/uploads/news/${name}`, function (err) {
         if (err) {
             console.log(err)
             return res.status(500).send({ msg: "Error occured" });
         }
         // returing the response with file path and name
-        return res.send({ name: myFile.name, path: `/${type}/${myFile.name}` });
+        return res.send({ name: myFile.name, path: `/${myFile.name}` });
     });
 })
 
@@ -439,6 +434,7 @@ require("./app/routes/types_menu.routes")(app);
 require("./app/routes/making_appointments.routes")(app);
 require("./app/routes/locations.routes")(app);
 require("./app/routes/appointments.routes")(app);
+require("./app/routes/news.routes")(app);
 
 app.listen(PORT, () => {
     //console.log(`Server is running on port ${PORT}.`);

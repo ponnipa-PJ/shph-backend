@@ -179,6 +179,7 @@ for (let h = 0; h < headers.length; h++) {
 Case.findByadminshphId = (id, result) => {
   console.log(id);
   sql.query(`SELECT u.* FROM  users u WHERE u.adminshphId  = ${id}`, (err, res) => {
+
     if (err) {
       //console.log("error: ", err);
       result(err, null);
@@ -580,7 +581,7 @@ Case.getUID = (UID, result) => {
 }
   // console.log(query);
   sql.query(query, (err, res) => {
-
+console.log(res);
   var decryptuid = decrypt(res[0].UID, pass)
   // console.log(decryptuid);
   res[0].UID = decryptuid

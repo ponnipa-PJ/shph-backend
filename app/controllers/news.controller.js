@@ -1,4 +1,4 @@
-const Data = require("../models/adminshph.model.js");
+const Data = require("../models/news.model.js");
 
 exports.create = (req, res) => {
 if (!req.body) {
@@ -8,7 +8,7 @@ message: 'Content can not be empty!'
 }
 
 const datas = new Data({
-adminId:req.body.adminId,shphId:req.body.shphId,username:req.body.username,password:req.body.password,status:req.body.status,hash:req.body.hash,type:req.body.type});
+title:req.body.title,content:req.body.content,status:req.body.status,createdBy:req.body.createdBy});
 Data.create(datas, (err, data) => {
 if (err)
 res.status(500).send({
@@ -19,23 +19,9 @@ else res.send(data);
 });
 };
 
-exports.signin = (req, res) => {
-    // Validate request
-    Data.signin(req.body, (err, data) => {
-        if (err)
-            res.status(500).send({
-                message:
-                    err.message || "Some error occurred while retrieving Users."
-            });
-        else res.send(data);
-    });
-};
-
 exports.findAll = (req, res) => {
 const name = req.query.name;
-const adminId=req.query.adminId;
-const role = req.query.role;
-Data.getAll(name,adminId,role, (err, data) => {
+Data.getAll(name, (err, data) => {
 if (err)
 res.status(500).send({
 message:
@@ -74,7 +60,7 @@ res.send([]);
 };
 
 exports.delete = (req, res) => {
-Data.remove(req.params.id,req.params.status, (err, data) => {
+Data.remove(req.params.id, (err, data) => {
 if (err) {
 if (err.kind === "not_found") {
 res.send([])
