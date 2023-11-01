@@ -15,6 +15,8 @@ module.exports = app => {
 
     router.put("/:id", datas.update);
 
+    router.put("/updateconfirm/:id", datas.updateconfirm);
+
     router.delete("/:id", datas.delete);
 
     router.delete("/", datas.deleteAll);

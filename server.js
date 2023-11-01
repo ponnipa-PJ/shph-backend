@@ -16,8 +16,8 @@ var corsOptions = {
     origin: "*"
 };
   
-// var link = 'http://localhost:8081'
-var link = 'https://api.hpkmaeka.com'
+var link = 'http://localhost:8081'
+// var link = 'https://api.hpkmaeka.com'
 
 setInterval(function () {
     axios.get(link + '/api/notification/1')
@@ -59,13 +59,31 @@ setInterval(function () {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
-                            }) + ' เวลา ' + res.data[r].time
+                            }) + res.data[r].time
                             // console.log(datecurrent,datetoday);
                             var linkconfirm = ''
                             if (datecurrent == datetoday) {
                                 linkconfirm = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + link + '/Confirmmasseuse?id=' + res.data[r].id
                             }
-                            var message = noti.message_chiropractor + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ' + linkconfirm
+                            var message = noti.message_chiropractor + ' '+res.data[r].typename+' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ที่ ' + res.data[r].shph + ' ' + linkconfirm
+                            // console.log(message);
+                            axios.get(link + '/notify?message=' + message + '&&token=' + res.data[r].line_token).then(() => {
+                            });
+                        }
+
+                    });
+
+                    axios.get(link + '/api/events/getappoint?date=' + date)
+                    .then(res => {
+                        // console.log(res.data);
+                        for (let r = 0; r < res.data.length; r++) {
+                            var breaktime = new Date(res.data[r].date)
+                            var header = breaktime.toLocaleDateString('th-TH', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            }) + res.data[r].time
+                            var message = noti.message_chiropractor + ' '+res.data[r].typename+' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ที่ ' + res.data[r].shph
                             // console.log(message);
                             axios.get(link + '/notify?message=' + message + '&&token=' + res.data[r].line_token).then(() => {
                             });
@@ -86,14 +104,14 @@ setInterval(function () {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
-                            }) + ' เวลา ' + timeformat(breaktimecurrent.toLocaleTimeString('th-TH'))
+                            }) +res.data[r].time
                             // console.log(header);
                             var linkconfirmden = ''
                             if (datecurrent == datedentist) {
                                 linkconfirmden = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + link + '/Confirmdentist?id=' + res.data[r].id
                             }
 
-                            var messagecurrent = noti.message_dentist + ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + headercurrent + ' ' + linkconfirmden
+                            var messagecurrent = noti.message_dentist + ' '+res.data[r].typename+ ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + headercurrent+ ' ที่ ' + res.data[r].shph + ' ' + linkconfirmden
                             // console.log(message);
                             axios.get(link + '/notify?message=' + messagecurrent + '&&token=' + res.data[r].line_token).then(() => {
                             });

@@ -140,7 +140,7 @@ Data.gettimebydoctoranddate = (date, id, userid, shphId, type, result) => {
         // var date = date.replace(' ', '+')
         query += ` and e.date LIKE '%${date}%' order by e.date`;
     }
-    //console.log(query);
+    console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -262,43 +262,109 @@ Data.geteventbyuseranddate = (date, id, shphId, result) => {
         result(null, res);
     });
 };
-Data.geteventbydate = (date, datecurrent, result) => {
+// Data.geteventbydate = (date, datecurrent, result) => {
+//     var list = []
+//     let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
+//     if (date) {
+//         query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%') group by e.userId`;
+//     }
+//     // console.log(query);
+//     sql.query(query, (err, res) => {
+//         for (let r = 0; r < res.length; r++) {
+//             var breaktime = new Date(res[r].date)
+//             var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+//             var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+//             var yeartoday = breaktime.getFullYear()
+//             var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
+
+//             let peruser = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.userId = ${res[r].userId} and (e.date LIKE '%${datetoday}%') order by e.date asc`;
+//             sql.query(peruser, (err, user) => {
+//                 var t = ''
+//                 for (let u = 0; u < user.length; u++) {
+//                     var breaktime = new Date(user[u].date)
+//                     if (u == 0) {
+//                         t += timeformat(breaktime.toLocaleTimeString('th-TH'))
+//                     }
+//                     if (user.length > 1 && user.length == u + 1) {
+//                         t += ' - '
+//                     }
+//                     if (u + 1 == user.length) {
+//                         t += timeformat(breaktime.toLocaleTimeString('th-TH'))
+//                     }
+//                     // console.log(u,user.length);
+
+
+//                 }
+//                 res[r].time = t
+//                 // console.log(t);
+//                 list.push(res[r])
+//             });
+//         }
+//         if (err) {
+//             result(null, err);
+//             return;
+//         }
+//         setTimeout(() => {
+
+//             result(null, list);
+//         }, 500);
+//     });
+// };
+
+
+Data.getappoint = (date, result) => {
     var list = []
-    let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
+    let query = `SELECT * FROM making_appointments m WHERE `;
     if (date) {
-        query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%') group by e.userId`;
+        query += `  m.date = '${date}'`;
     }
-    // console.log(query);
-    sql.query(query, (err, res) => {
-        for (let r = 0; r < res.length; r++) {
-            var breaktime = new Date(res[r].date)
-            var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
-            var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
-            var yeartoday = breaktime.getFullYear()
-            var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
-
-            let peruser = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM events e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.userId = ${res[r].userId} and (e.date LIKE '%${datetoday}%') order by e.date asc`;
-            sql.query(peruser, (err, user) => {
-                var t = ''
-                for (let u = 0; u < user.length; u++) {
-                    var breaktime = new Date(user[u].date)
-                    if (u == 0) {
-                        t += timeformat(breaktime.toLocaleTimeString('th-TH'))
+    console.log(query);
+    sql.query(query, async (err, res) => {
+        if (res.length != 0) {
+            for (let r = 0; r < res.length; r++) {
+                if (res[r].mapeventId) {
+                    let sqlevent = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph,l.name as location,a.name as appoint FROM making_appointments m join map_events e on e.id = m.mapeventId join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId join appointments a on m.typeappointmentId = a.id join locations l on l.id = m.locationId WHERE e.status !=0 and e.id = ${res[r].mapeventId}`
+                    console.log(sqlevent);
+                    await sql.query(sqlevent, async (err, mas) => {
+                        res[r] = mas[0]
+                        var type = JSON.parse(res[r].type)
+    var typename = ''
+    for (let t = 0; t < type.length; t++) {
+        let peruser = `SELECT * FROM masseusetype WHERE id = ${type[t]}`;
+                await sql.query(peruser, (err, mastype) => {
+           
+                    typename += mastype[0].name + ' '
+                    // res[r].type = t
+                    if (JSON.parse(res[r].type).length == t+1) {
+                        res[r].typename = typename
+                        typename = ''
                     }
-                    if (user.length > 1 && user.length == u + 1) {
-                        t += ' - '
+                });
+    }
+                    })
+                }else if (res[r].mapeventdentistId) {
+                    let sqleventden = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph,l.name as location,a.name as appoint FROM making_appointments m join map_events_dentist e on e.id = m.mapeventdentistId join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId join appointments a on m.typeappointmentId = a.id join locations l on l.id = m.locationId WHERE e.status !=0 and e.id = ${res[r].mapeventdentistId}`
+                    await sql.query(sqleventden, async (err, den) => {
+                        res[r] = den[0]
+                        var type = JSON.parse(res[r].type)
+    var typename = ''
+    for (let t = 0; t < type.length; t++) {
+        let dentype = `SELECT * FROM dentisttype WHERE id = ${type[t]}`;
+                await sql.query(dentype, (err, dentypes) => {
+           
+                    typename += dentypes[0].name + ' '
+                    // res[r].type = t
+                    if (JSON.parse(res[r].type).length == t+1) {
+                        res[r].typename = typename
+                        typename = ''
                     }
-                    if (u + 1 == user.length) {
-                        t += timeformat(breaktime.toLocaleTimeString('th-TH'))
-                    }
-                    // console.log(u,user.length);
-
-
+                });
+    }
+                    })
                 }
-                res[r].time = t
-                // console.log(t);
-                list.push(res[r])
-            });
+                
+            }
+            
         }
         if (err) {
             result(null, err);
@@ -306,7 +372,85 @@ Data.geteventbydate = (date, datecurrent, result) => {
         }
         setTimeout(() => {
 
-            result(null, list);
+            result(null, res);
+        }, 500);
+    });
+};
+
+Data.geteventbydate = (date, datecurrent, result) => {
+    var list = []
+    let query = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph FROM map_events e left join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId WHERE e.status !=0 `;
+    if (date) {
+        query += ` and (e.date = '${date}' or e.date = '${datecurrent}')`;
+    }
+    console.log(query);
+    sql.query(query, async (err, res) => {
+        for (let r = 0; r < res.length; r++) {
+        //     var breaktime = new Date(res[r].date)
+        //     var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+        //     var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+        //     var yeartoday = breaktime.getFullYear()
+        //     var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
+var type = JSON.parse(res[r].type)
+var typename = ''
+for (let t = 0; t < type.length; t++) {
+    let peruser = `SELECT * FROM masseusetype WHERE id = ${type[t]}`;
+            await sql.query(peruser, (err, mas) => {
+       
+                typename += mas[0].name + ' '
+                // res[r].type = t
+                if (JSON.parse(res[r].type).length == t+1) {
+                    res[r].typename = typename
+                    typename = ''
+                }
+            });
+}
+            
+        }
+        if (err) {
+            result(null, err);
+            return;
+        }
+        setTimeout(() => {
+
+            result(null, res);
+        }, 500);
+    });
+};
+
+Data.geteventbook = (id, result) => {
+    let query = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph FROM map_events e left join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId WHERE e.id = ${id}`;
+    // console.log(query);
+    sql.query(query, async (err, res) => {
+        for (let r = 0; r < res.length; r++) {
+        //     var breaktime = new Date(res[r].date)
+        //     var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+        //     var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+        //     var yeartoday = breaktime.getFullYear()
+        //     var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
+var type = JSON.parse(res[r].type)
+var typename = ''
+for (let t = 0; t < type.length; t++) {
+    let peruser = `SELECT * FROM masseusetype WHERE id = ${type[t]}`;
+            await sql.query(peruser, (err, mas) => {
+       
+                typename += mas[0].name + ' '
+                // res[r].type = t
+                if (JSON.parse(res[r].type).length == t+1) {
+                    res[r].typename = typename
+                    typename = ''
+                }
+            });
+}
+            
+        }
+        if (err) {
+            result(null, err);
+            return;
+        }
+        setTimeout(() => {
+
+            result(null, res[0]);
         }, 500);
     });
 };

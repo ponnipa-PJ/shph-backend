@@ -9,7 +9,11 @@ router.get("/deleteevent", datas.deleteevent);
 router.get("/", datas.findAll);
 router.get("/geteventappoint", datas.geteventappoint);
 
+router.get("/getappoint", datas.getappoint);
+
 router.get("/geteventbydate", datas.geteventbydate);
+router.get("/geteventbook", datas.geteventbook);
+
 router.get("/createcolumn", datas.createcolumn);
 
 router.get("/geteventbyuseranddate", datas.geteventbyuseranddate);

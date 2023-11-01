@@ -59,6 +59,18 @@ exports.book = (req, res) => {
             });
             };
             
+            exports.geteventbook = (req, res) => {
+                const id = req.query.id;
+                
+                Data.geteventbook(id, (err, data) => {
+                if (err)
+                res.status(500).send({
+                message:
+                err.message || "Some error occurred while retrieving table."
+                });
+                else res.send(data);
+                });
+                };
     exports.geteventbydate = (req, res) => {
         const date = req.query.date;
         const datecurrent = req.query.datecurrent;

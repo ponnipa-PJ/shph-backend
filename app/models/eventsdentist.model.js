@@ -70,18 +70,96 @@ if (doc.length > 0) {
             result(null, res);
         });
     };
-    Data.geteventbydate = (date,datecurrent, result) => {
-        let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM eventsdentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
-        if (date) {
-            query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%')`;
-        }
-    // console.log(query);
-        sql.query(query, (err, res) => {
+    // Data.geteventbydate = (date,datecurrent, result) => {
+    //     let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM eventsdentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
+    //     if (date) {
+    //         query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%')`;
+    //     }
+    // // console.log(query);
+    //     sql.query(query, (err, res) => {
+    //         if (err) {
+    //             result(null, err);
+    //             return;
+    //         }
+    //         result(null, res);
+    //     });
+    // };
+    
+    Data.geteventbook = (id, result) => {
+        let query = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph FROM map_events_dentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId WHERE e.id = ${id}`;
+        // console.log(query);
+        sql.query(query, async (err, res) => {
+            for (let r = 0; r < res.length; r++) {
+            //     var breaktime = new Date(res[r].date)
+            //     var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+            //     var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+            //     var yeartoday = breaktime.getFullYear()
+            //     var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
+    var type = JSON.parse(res[r].type)
+    var typename = ''
+    for (let t = 0; t < type.length; t++) {
+        let peruser = `SELECT * FROM dentisttype WHERE id = ${type[t]}`;
+                await sql.query(peruser, (err, mas) => {
+           
+                    typename += mas[0].name + ' '
+                    // res[r].type = t
+                    if (JSON.parse(res[r].type).length == t+1) {
+                        res[r].typename = typename
+                        typename = ''
+                    }
+                });
+    }
+                
+            }
             if (err) {
                 result(null, err);
                 return;
             }
-            result(null, res);
+            setTimeout(() => {
+    
+                result(null, res[0]);
+            }, 500);
+        });
+    };
+
+    Data.geteventbydate = (date, datecurrent, result) => {
+        var list = []
+        let query = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph FROM map_events_dentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId WHERE e.status !=0 `;
+        if (date) {
+            query += ` and (e.date = '${date}' or e.date = '${datecurrent}')`;
+        }
+        console.log(query);
+        sql.query(query, async (err, res) => {
+            for (let r = 0; r < res.length; r++) {
+            //     var breaktime = new Date(res[r].date)
+            //     var daytoday = (breaktime.getDate()).toString().padStart(2, "0");
+            //     var monthtoday = (breaktime.getMonth() + 1).toString().padStart(2, "0");
+            //     var yeartoday = breaktime.getFullYear()
+            //     var datetoday = yeartoday + '-' + monthtoday + '-' + daytoday
+    var type = JSON.parse(res[r].type)
+    var typename = ''
+    for (let t = 0; t < type.length; t++) {
+        let peruser = `SELECT * FROM dentisttype WHERE id = ${type[t]}`;
+                await sql.query(peruser, (err, mas) => {
+           
+                    typename += mas[0].name + ' '
+                    // res[r].type = t
+                    if (JSON.parse(res[r].type).length == t+1) {
+                        res[r].typename = typename
+                        typename = ''
+                    }
+                });
+    }
+                
+            }
+            if (err) {
+                result(null, err);
+                return;
+            }
+            setTimeout(() => {
+    
+                result(null, res);
+            }, 500);
         });
     };
 

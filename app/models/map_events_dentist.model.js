@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.date=datas.date;this.shphId=datas.shphId;this.eventId=datas.eventId;this.userId=datas.userId;this.createdBy=datas.createdBy;this.doctorId=datas.doctorId;this.typebook=datas.typebook;this.time=datas.time;this.type=datas.type};
+    this.confirmstatus=datas.confirmstatus;this.date=datas.date;this.shphId=datas.shphId;this.eventId=datas.eventId;this.userId=datas.userId;this.createdBy=datas.createdBy;this.doctorId=datas.doctorId;this.typebook=datas.typebook;this.time=datas.time;this.type=datas.type};
 Data.create = (newData, result) => {
     //console.log(newData.eventId);
     var data = {
@@ -103,6 +103,22 @@ return;
 result({ kind: "not_found" }, null);
 });
 };
+
+Data.updateconfirm = (id, datas, result) => {
+    sql.query(
+    "UPDATE map_events_dentist SET confirmstatus = ? WHERE id = ?",
+    [datas.confirmstatus,id],(err, res) => {
+    if (err) {
+    result(null, err);
+    return;
+    }
+    if (res.affectedRows == 0) {
+    result({ kind: "not_found" }, null);
+    return;
+    };result(null, { id: id, ...datas });
+    }
+    );
+    };
 
 Data.updateById = (id, datas, result) => {
 sql.query(
