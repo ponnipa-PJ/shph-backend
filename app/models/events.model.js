@@ -140,7 +140,7 @@ Data.gettimebydoctoranddate = (date, id, userid, shphId, type, result) => {
         // var date = date.replace(' ', '+')
         query += ` and e.date LIKE '%${date}%' order by e.date`;
     }
-    console.log(query);
+    // console.log(query);
     sql.query(query, (err, res) => {
         // for (let r = 0; r < res.length; r++) {
         //     console.log(res[r].date);
@@ -312,19 +312,19 @@ Data.geteventbyuseranddate = (date, id, shphId, result) => {
 // };
 
 
-Data.getappoint = (date, result) => {
+Data.getappointbyId = (id, result) => {
     var list = []
     let query = `SELECT * FROM making_appointments m WHERE `;
-    if (date) {
-        query += `  m.date = '${date}'`;
+    if (id) {
+        query += `  m.id = ${id}`;
     }
-    console.log(query);
+    // console.log(query);
     sql.query(query, async (err, res) => {
-        if (res.length != 0) {
+        if (res) {
             for (let r = 0; r < res.length; r++) {
                 if (res[r].mapeventId) {
                     let sqlevent = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph,l.name as location,a.name as appoint FROM making_appointments m join map_events e on e.id = m.mapeventId join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId join appointments a on m.typeappointmentId = a.id join locations l on l.id = m.locationId WHERE e.status !=0 and e.id = ${res[r].mapeventId}`
-                    console.log(sqlevent);
+                    // console.log(sqlevent);
                     await sql.query(sqlevent, async (err, mas) => {
                         res[r] = mas[0]
                         var type = JSON.parse(res[r].type)
@@ -338,6 +338,7 @@ Data.getappoint = (date, result) => {
                     if (JSON.parse(res[r].type).length == t+1) {
                         res[r].typename = typename
                         typename = ''
+                        res[r].eventtype=1
                     }
                 });
     }
@@ -357,6 +358,74 @@ Data.getappoint = (date, result) => {
                     if (JSON.parse(res[r].type).length == t+1) {
                         res[r].typename = typename
                         typename = ''
+                        res[r].eventtype=2
+                    }
+                });
+    }
+                    })
+                }
+                
+            }
+            
+        }
+        if (err) {
+            result(null, err);
+            return;
+        }
+        setTimeout(() => {
+
+            result(null, res[0]);
+        }, 500);
+    });
+};
+
+Data.getappoint = (date, result) => {
+    var list = []
+    let query = `SELECT * FROM making_appointments m WHERE `;
+    if (date) {
+        query += `  m.date = '${date}'`;
+    }
+    // console.log(query);
+    sql.query(query, async (err, res) => {
+        if (res) {
+            for (let r = 0; r < res.length; r++) {
+                if (res[r].mapeventId) {
+                    let sqlevent = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph,l.name as location,a.name as appoint FROM making_appointments m join map_events e on e.id = m.mapeventId join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId join appointments a on m.typeappointmentId = a.id join locations l on l.id = m.locationId WHERE e.status !=0 and e.id = ${res[r].mapeventId}`
+                    // console.log(sqlevent);
+                    await sql.query(sqlevent, async (err, mas) => {
+                        res[r] = mas[0]
+                        var type = JSON.parse(res[r].type)
+    var typename = ''
+    for (let t = 0; t < type.length; t++) {
+        let peruser = `SELECT * FROM masseusetype WHERE id = ${type[t]}`;
+                await sql.query(peruser, (err, mastype) => {
+           
+                    typename += mastype[0].name + ' '
+                    // res[r].type = t
+                    if (JSON.parse(res[r].type).length == t+1) {
+                        res[r].typename = typename
+                        typename = ''
+                        res[r].eventtype=1
+                    }
+                });
+    }
+                    })
+                }else if (res[r].mapeventdentistId) {
+                    let sqleventden = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph,l.name as location,a.name as appoint FROM making_appointments m join map_events_dentist e on e.id = m.mapeventdentistId join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId join appointments a on m.typeappointmentId = a.id join locations l on l.id = m.locationId WHERE e.status !=0 and e.id = ${res[r].mapeventdentistId}`
+                    await sql.query(sqleventden, async (err, den) => {
+                        res[r] = den[0]
+                        var type = JSON.parse(res[r].type)
+    var typename = ''
+    for (let t = 0; t < type.length; t++) {
+        let dentype = `SELECT * FROM dentisttype WHERE id = ${type[t]}`;
+                await sql.query(dentype, (err, dentypes) => {
+           
+                    typename += dentypes[0].name + ' '
+                    // res[r].type = t
+                    if (JSON.parse(res[r].type).length == t+1) {
+                        res[r].typename = typename
+                        typename = ''
+                        res[r].eventtype=2
                     }
                 });
     }
@@ -383,7 +452,7 @@ Data.geteventbydate = (date, datecurrent, result) => {
     if (date) {
         query += ` and (e.date = '${date}' or e.date = '${datecurrent}')`;
     }
-    console.log(query);
+    // console.log(query);
     sql.query(query, async (err, res) => {
         for (let r = 0; r < res.length; r++) {
         //     var breaktime = new Date(res[r].date)

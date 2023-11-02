@@ -11,6 +11,8 @@ router.get("/geteventappoint", datas.geteventappoint);
 
 router.get("/getappoint", datas.getappoint);
 
+router.get("/getappointbyId", datas.getappointbyId);
+
 router.get("/geteventbydate", datas.geteventbydate);
 router.get("/geteventbook", datas.geteventbook);
 

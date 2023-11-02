@@ -235,7 +235,7 @@ Case.signinperson = (req, result) => {
       
     }
     // console.log(uid);
-    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.UID = '${uid}'`, (err, res) => {
+    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname,u.token FROM users as u WHERE u.UID = '${uid}'`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);
@@ -260,6 +260,7 @@ Case.signinperson = (req, result) => {
                 email:res[0].email,
                 UID:res[0].UID,
                 shphId:res[0].shphId,
+                token:res[0].token,
               }
               // console.log(data);
               result(null, data);
@@ -284,6 +285,7 @@ Case.signinperson = (req, result) => {
             email:res[0].email,
             UID:res[0].UID,
             shphId:res[0].shphId,
+            token:res[0].token,
           }
           // console.log(data);
           result(null, data);
@@ -303,7 +305,7 @@ Case.signinperson = (req, result) => {
 
 Case.signin = (req, result) => {
   // console.log(req);
-    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
+    sql.query(`SELECT u.shphId,u.UID,u.line_token,u.email,u.id,u.role_id,u.active,u.password,u.firstname,u.lastname,u.token FROM users as u WHERE u.email = '${req.email}'`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);
@@ -328,6 +330,7 @@ Case.signin = (req, result) => {
                 email:res[0].email,
                 UID:res[0].UID,
                 shphId:res[0].shphId,
+                token:res[0].token,
               }
               // console.log(data);
               result(null, data);
@@ -352,6 +355,7 @@ Case.signin = (req, result) => {
             email:res[0].email,
             UID:res[0].UID,
             shphId:res[0].shphId,
+            token:res[0].token,
           }
           // console.log(data);
           result(null, data);
@@ -581,7 +585,7 @@ Case.getUID = (UID, result) => {
 }
   // console.log(query);
   sql.query(query, (err, res) => {
-console.log(res);
+// console.log(res);
   var decryptuid = decrypt(res[0].UID, pass)
   // console.log(decryptuid);
   res[0].UID = decryptuid
@@ -701,9 +705,10 @@ Case.updateById = (id, cases, result) => {
   if(cases.password != cases.hash){
     cases.password = bcrypt.hashSync(cases.password, 8)
   }
+  const encText = encrypt(cases.UID, pass)
   sql.query(
-    "UPDATE  users SET shphId = ?,firstname=?,lastname=?,email = ?,password = ? ,role_id = ?,line_token = ? ,phone = ?,number=?,moo=?,soi=?,provinceId=?,amphureId=?,districtsId=? WHERE id  = ?",
-    [cases.shphId,cases.firstname,cases.lastname,cases.email,cases.password,cases.role_id ,cases.line_token,cases.phone,cases.number,cases.moo,cases.soi,cases.provinceId,cases.amphureId,cases.districtsId, id],
+    "UPDATE  users SET UID=?,shphId = ?,firstname=?,lastname=?,email = ?,password = ? ,role_id = ?,line_token = ? ,phone = ?,number=?,moo=?,soi=?,provinceId=?,amphureId=?,districtsId=? WHERE id  = ?",
+    [encText,cases.shphId,cases.firstname,cases.lastname,cases.email,cases.password,cases.role_id ,cases.line_token,cases.phone,cases.number,cases.moo,cases.soi,cases.provinceId,cases.amphureId,cases.districtsId, id],
     (err, res) => {
       if (err) {
         console.log("error: ", err);

@@ -128,7 +128,7 @@ if (doc.length > 0) {
         if (date) {
             query += ` and (e.date = '${date}' or e.date = '${datecurrent}')`;
         }
-        console.log(query);
+        // console.log(query);
         sql.query(query, async (err, res) => {
             for (let r = 0; r < res.length; r++) {
             //     var breaktime = new Date(res[r].date)

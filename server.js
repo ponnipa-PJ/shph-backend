@@ -16,8 +16,10 @@ var corsOptions = {
     origin: "*"
 };
   
-var link = 'http://localhost:8081'
-// var link = 'https://api.hpkmaeka.com'
+// var link = 'http://localhost:8081'
+var link = 'https://api.hpkmaeka.com'
+// var linkfront = 'http://localhost:8082'
+var linkfront = 'https://www.hpkmaeka.com'
 
 setInterval(function () {
     axios.get(link + '/api/notification/1')
@@ -34,7 +36,7 @@ setInterval(function () {
             // console.log(hour, minute, second);
             //   
             if (hour == time[0] && minute == time[1] && second == time[2]) {
-                var day = (d.getDate() + 1).toString().padStart(2, "0");
+                var day = (d.getDate() + parseInt(noti.day)).toString().padStart(2, "0");
                 var month = (d.getMonth() + 1).toString().padStart(2, "0");
                 var year = d.getFullYear()
                 var date = year + '-' + month + '-' + day
@@ -63,7 +65,7 @@ setInterval(function () {
                             // console.log(datecurrent,datetoday);
                             var linkconfirm = ''
                             if (datecurrent == datetoday) {
-                                linkconfirm = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + link + '/Confirmmasseuse?id=' + res.data[r].id
+                                linkconfirm = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + linkfront + '/Confirmmasseuse?id=' + res.data[r].id
                             }
                             var message = noti.message_chiropractor + ' '+res.data[r].typename+' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ที่ ' + res.data[r].shph + ' ' + linkconfirm
                             // console.log(message);
@@ -76,14 +78,22 @@ setInterval(function () {
                     axios.get(link + '/api/events/getappoint?date=' + date)
                     .then(res => {
                         // console.log(res.data);
+
                         for (let r = 0; r < res.data.length; r++) {
+                            var message_appointment = ''
+                            if (res.data[r].eventtype == 1) {
+                                message_appointment = noti.message_appointment_chiropractor
+                            }else{
+                                message_appointment = noti.message_appointment_dentist
+                            }
                             var breaktime = new Date(res.data[r].date)
                             var header = breaktime.toLocaleDateString('th-TH', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric',
                             }) + res.data[r].time
-                            var message = noti.message_chiropractor + ' '+res.data[r].typename+' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ที่ ' + res.data[r].shph
+                            var message = message_appointment + ' '+res.data[r].appoint+' '+res.data[r].typename+' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + header + ' ที่ ' + res.data[r].location
+                            
                             // console.log(message);
                             axios.get(link + '/notify?message=' + message + '&&token=' + res.data[r].line_token).then(() => {
                             });
@@ -108,7 +118,7 @@ setInterval(function () {
                             // console.log(header);
                             var linkconfirmden = ''
                             if (datecurrent == datedentist) {
-                                linkconfirmden = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + link + '/Confirmdentist?id=' + res.data[r].id
+                                linkconfirmden = 'กรุณายืนยันคิวได้ที่ลิงก์นี้ ' + linkfront + '/Confirmdentist?id=' + res.data[r].id
                             }
 
                             var messagecurrent = noti.message_dentist + ' '+res.data[r].typename+ ' หมอ' + res.data[r].firstname + ' ' + res.data[r].lastname + ' วันที่ ' + headercurrent+ ' ที่ ' + res.data[r].shph + ' ' + linkconfirmden
@@ -141,6 +151,7 @@ app.use(cors(corsOptions));
 app.use(fileUpload());
 
 var bodyParser = require('body-parser');
+const internal = require("stream");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -391,7 +402,24 @@ app.post('/uploadimage', (req, res) => {
         return res.send({ name: myFile.name, path: `/${myFile.name}` });
     });
 })
+app.post('/uploadbg', (req, res) => {
 
+    if (!req.files) {
+        return res.status(500).send({ msg: "file is not found" })
+    }
+    // accessing the file
+    const myFile = req.files.file;
+    var name = req.query.name
+    //  mv() method places the file inside public directory
+    myFile.mv(`${__dirname}/uploads/bg/${name}`, function (err) {
+        if (err) {
+            console.log(err)
+            return res.status(500).send({ msg: "Error occured" });
+        }
+        // returing the response with file path and name
+        return res.send({ name: myFile.name, path: `/${myFile.name}` });
+    });
+})
 app.get("/img", (req, res) => {
     var image1 = "./uploads/" + req.query.name
     var base64Img = require('base64-img');

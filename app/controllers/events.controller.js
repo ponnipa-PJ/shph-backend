@@ -144,6 +144,19 @@ exports.book = (req, res) => {
                     });
                     };
                     
+                    exports.getappointbyId = (req, res) => {
+                        const id = req.query.id;
+                        
+                        Data.getappointbyId(id, (err, data) => {
+                        if (err)
+                        res.status(500).send({
+                        message:
+                        err.message || "Some error occurred while retrieving table."
+                        });
+                        else res.send(data);
+                        });
+                        };
+
                     exports.getappoint = (req, res) => {
                         const date = req.query.date;
                         
