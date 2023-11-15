@@ -196,7 +196,8 @@ exports.getUID = (req, res) => {
 
 exports.checkUID = (req, res) => {
     const UID = req.query.UID;
-    Case.checkUID(UID, (err, data) => {
+    const UIDUser = req.query.UIDUser;
+    Case.checkUID(UID,UIDUser, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

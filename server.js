@@ -16,10 +16,12 @@ var corsOptions = {
     origin: "*"
 };
   
-// var link = 'http://localhost:8081'
-var link = 'https://api.hpkmaeka.com'
-// var linkfront = 'http://localhost:8082'
-var linkfront = 'https://www.hpkmaeka.com'
+var link = 'http://localhost:8081'
+// var link = 'https://api.hpkmaeka.com'
+// var link = 'https://api.shphQueue.ponnipa.in.th'
+var linkfront = 'http://localhost:8082'
+// var linkfront = 'https://www.hpkmaeka.com'
+// var linkfront = 'https://www.hpkmaeka.com'
 
 setInterval(function () {
     axios.get(link + '/api/notification/1')

@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-this.name=datas.name;this.status=datas.status;this.createdBy=datas.createdBy};
+    this.img_path=datas.img_path;this.name=datas.name;this.status=datas.status;this.createdBy=datas.createdBy};
 Data.create = (newData, result) => {
 sql.query("INSERT INTO shph SET ?", newData, (err, res) => {
 if (err) {
@@ -87,8 +87,8 @@ result({ kind: "not_found" }, null);
 
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE shph SET name = ? WHERE id = ?",
-[datas.name,id],(err, res) => {
+"UPDATE shph SET name = ?, img_path = ? WHERE id = ?",
+[datas.name,datas.img_path,id],(err, res) => {
 if (err) {
 result(null, err);
 return;

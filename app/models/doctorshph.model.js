@@ -130,7 +130,7 @@ Data.getdoctorandshphmasseuse = (roleId,userId, result) => {
                 res[e].shph = shphonces
             })
                 }else{
-                let shph = `SELECT s.* FROM doctorshph d join shph s on d.shphId = s.id join users u on u.id = d.docrtorId where d.docrtorId = ${res[e].id} and d.status = 1`
+                let shph = `SELECT s.*,d.docrtorId FROM doctorshph d join shph s on d.shphId = s.id join users u on u.id = d.docrtorId where d.docrtorId = ${res[e].id} and d.status = 1`
                 sql.query(shph, (err, shphs) => {
                     res[e].shph = shphs
                     

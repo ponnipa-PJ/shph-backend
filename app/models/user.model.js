@@ -604,13 +604,18 @@ Case.getUID = (UID, result) => {
   });
 };
 
-Case.checkUID = (UID, result) => {
+Case.checkUID = (UID,UIDUser, result) => {
+  // console.log(UIDUser);
   // let query = "SELECT * FROM report";
   var list = []
-  let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1";
-  if (UID) {
+  let query = "SELECT u.UID,u.phone,u.firstname,u.lastname,u.id,u.email,u.password,r.id as role_id, r.name as role_name,u.line_token FROM users u join roles r on u.role_id = r.id where u.active = 1 and u.UID is not null and u.UID != ''";
+    if (UID) {
   var uid = ''
-  sql.query(`SELECT id,UID FROM users where UID is not null`, (err, res) => {
+  let userall = "SELECT id,UID FROM users where UID is not null and UID != ''";
+  if (UIDUser) {
+    userall += ` and id != ${UIDUser}`
+  }
+  sql.query(userall, (err, res) => {
     // console.log(res);
     for (let r = 0; r < res.length; r++) {
       // var encryptuid = encrypt(res[r].UID, pass)
