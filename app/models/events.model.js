@@ -51,27 +51,9 @@ Data.book = (name, id, shphId, result) => {
                 date:res[r].date,
                 title:res[r].firstname + ' ' + res[r].lastname
             })
-            // res[r].title = res[r].firstname + ' ' + res[r].lastname
         }
                 });
             }
-            //     if (res[r].title != 'พักเทียง') {
-            //     let query = `SELECT * FROM events WHERE userId = ${id} and date = '${res[r].date}'`;
-            //     // console.log(query);
-
-
-
-            //     sql.query(query, (err, doc) => {
-            //         if (doc.length > 0) {
-            //             res[r] = doc[0]
-            //         }else{
-            //             res[r].bookstatus = 1
-            //             res[r].userId = null
-            //             res[r].remark = null
-            //             res[r].title = 'ว่าง'
-            //         }
-            //     })
-            //     }
         }
         if (err) {
             result(null, err);

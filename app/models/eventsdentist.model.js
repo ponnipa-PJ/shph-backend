@@ -14,37 +14,119 @@ result(null, { id: res.insertId, ...newData });
 });
 }
 
-Data.book = (name,id,shphId, result) => {
-    let query = `SELECT e.* FROM eventsdentist e join users u on u.id = e.doctorId WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and e.shphId = ${shphId}`;
-    if (name) {
-    query += ` and e.date LIKE '%${name}%'`;
+Data.gettimebydoctoranddate = (date, id, userid, shphId, type, result) => {
+    let query = `SELECT e.*,u.firstname,u.lastname FROM eventsdentist e join users u on u.id = e.doctorId `;
+    if (type == 1) {
+        query += ` WHERE e.status !=0 and(e.userId is null) and e.doctorId =${id} and e.shphId = ${shphId} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE() and e.bookstatus != 0`
+    } else if (type == 2) {
+        query += ` WHERE e.status !=0 and(e.userId is null or e.userId =${userid} ) and e.doctorId =${id} and e.shphId = ${shphId} and e.bookstatus != 2 and e.title != 'พักเที่ยง' and e.title != 'พักเทียง' and e.date >= CURDATE()`
     }
-    query += ' Group by e.date'
-    //console.log(query);
+    if (date) {
+        // var date = date.replace(' ', '+')
+        query += ` and e.date LIKE '%${date}%' order by e.date`;
+    }
+    // console.log(query);
+    sql.query(query, (err, res) => {
+        // for (let r = 0; r < res.length; r++) {
+        //     console.log(res[r].date);
+        //     var d = new Date(res[r].date)
+        //     console.log(d);
+        //     day = (d.getDate()).toString().padStart(2, "0");
+        //     month = (d.getMonth() + 1).toString().padStart(2, "0");
+        // year =   d.getFullYear()
+        // hour = (d.getHours()).toString().padStart(2, "0");
+        // minute = (d.getMinutes()).toString().padStart(2, "0");
+        // second = (d.getSeconds()).toString().padStart(2, "0");
+        // console.log(d.getTime());     
+        // console.log(day);   
+        // console.log(month);   
+        // console.log(year);  
+        // console.log(hour);
+        // console.log(minute);
+        // console.log(second);
+        // if (hour == 00 && minute ==00 && second ==00) {
+        //     date = year+'-'+month+'-'+day
+        // }else{
+        //     // date = "2023-09-25T06:00:00+07:00"
+        //     date = year+'-'+month+'-'+day+'T'+hour+':'+minute+':'+second+'+07:00'
+        // }
+        // res[r].date =  date
+        // }
+        if (err) {
+            result(null, err);
+            return;
+        }
+        result(null, res);
+    });
+};
+
+Data.book = (name, id, shphId, result) => {
+    var list = []
+    let query = `SELECT e.id,d.id as docid, d.firstname,d.lastname,e.date FROM eventsdentist e join users d on e.doctorId = d.id WHERE e.status !=0  and e.bookstatus =2 and e.date >= CURDATE() and e.shphId = ${shphId}`;
+    if (name) {
+        query += ` and e.date LIKE '%${name}%'`;
+    }
+
+    // query += ' Group by e.doctorId order by e.date'
+    // console.log(query);
     sql.query(query, (err, res) => {
         for (let r = 0; r < res.length; r++) {
-            // console.log(res[r].title);
-            if (res[r].title != 'พักเที่ยง' &&  res[r].title != 'พักเทียง') {
-                let query = `SELECT * FROM eventsdentist WHERE userId is null and date = '${res[r].date}'`;
-// console.log(query);
-                sql.query(query, (err, doc) => {
-                    // console.log(doc);
-if (doc.length > 0) {
-    res[r] = doc[0]
-}
-                })
+            if (id) {
+                let check = `SELECT e.* FROM eventsdentist e WHERE e.date LIKE '%${res[r].date}%' and e.doctorId = ${res[r].docid} and e.shphId = ${shphId} and e.bookstatus = 0`;
+                sql.query(check, (err, checks) => {
+        // console.log(checks.length);
+        if (checks.length < id) {
+            list.push({
+                id:res[r].id,
+                docid:res[r].docid,
+                date:res[r].date,
+                title:res[r].firstname + ' ' + res[r].lastname
+            })
+        }
+                });
             }
         }
-    if (err) {
-    result(null, err);
-    return;
-    }
-    setTimeout(() => {
+        if (err) {
+            result(null, err);
+            return;
+        }
+        setTimeout(() => {
 
-        result(null, res);
-    }, 500);
+            result(null, list);
+        }, 500);
     });
-    };
+};
+// Data.book = (name,id,shphId, result) => {
+//     let query = `SELECT e.* FROM eventsdentist e join users u on u.id = e.doctorId WHERE e.status !=0  and e.bookstatus !=2 and e.date >= CURDATE() and e.shphId = ${shphId}`;
+//     if (name) {
+//     query += ` and e.date LIKE '%${name}%'`;
+//     }
+//     query += ' Group by e.date'
+//     //console.log(query);
+//     sql.query(query, (err, res) => {
+//         for (let r = 0; r < res.length; r++) {
+//             // console.log(res[r].title);
+//             if (res[r].title != 'พักเที่ยง' &&  res[r].title != 'พักเทียง') {
+//                 let query = `SELECT * FROM eventsdentist WHERE userId is null and date = '${res[r].date}'`;
+// // console.log(query);
+//                 sql.query(query, (err, doc) => {
+//                     // console.log(doc);
+// if (doc.length > 0) {
+//     res[r] = doc[0]
+// }
+//                 })
+//             }
+//         }
+//     if (err) {
+//     result(null, err);
+//     return;
+//     }
+//     setTimeout(() => {
+
+//         result(null, res);
+//     }, 500);
+//     });
+//     };
     
     Data.createcolumn = (name, result) => {
         console.log(name);
@@ -70,20 +152,6 @@ if (doc.length > 0) {
             result(null, res);
         });
     };
-    // Data.geteventbydate = (date,datecurrent, result) => {
-    //     let query = `SELECT e.*,d.firstname,d.lastname,u.line_token FROM eventsdentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId WHERE e.status !=0 and e.userId is not null `;
-    //     if (date) {
-    //         query += ` and (date LIKE '%${date}%' or date LIKE '%${datecurrent}%')`;
-    //     }
-    // // console.log(query);
-    //     sql.query(query, (err, res) => {
-    //         if (err) {
-    //             result(null, err);
-    //             return;
-    //         }
-    //         result(null, res);
-    //     });
-    // };
     
     Data.geteventbook = (id, result) => {
         let query = `SELECT e.*,d.firstname,d.lastname,u.line_token,s.name as shph FROM map_events_dentist e left join users u on u.id = e.userId join users d on d.id = e.doctorId join shph s on s.id = e.shphId WHERE e.id = ${id}`;

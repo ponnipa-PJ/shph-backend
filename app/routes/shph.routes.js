@@ -16,6 +16,10 @@ router.get("/:id", datas.findOne);
 
 router.put("/:id", datas.update);
 
+router.put("/updatedefaultshow/:id", datas.updatedefaultshow);
+
+
+
 router.delete("/:id", datas.delete);
 
 router.delete("/", datas.deleteAll);

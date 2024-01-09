@@ -1,7 +1,7 @@
 const sql = require("./db");
 
 const Data = function (datas) {
-    this.img_path=datas.img_path;this.name=datas.name;this.status=datas.status;this.createdBy=datas.createdBy};
+    this.defaultshow=datas.defaultshow;this.fullname=datas.fullname;this.img_path=datas.img_path;this.name=datas.name;this.status=datas.status;this.createdBy=datas.createdBy};
 Data.create = (newData, result) => {
 sql.query("INSERT INTO shph SET ?", newData, (err, res) => {
 if (err) {
@@ -58,11 +58,14 @@ Data.getdoctorandshphmasseuse = (name, result) => {
     });
     };
 
-Data.getAll = (name, result) => {
+Data.getAll = (name,defaultshow, result) => {
 let query = "SELECT * FROM shph";
 if (name) {
 query += ` WHERE status = ${name}`;
 }
+if (defaultshow) {
+    query += ` and defaultshow = ${defaultshow}`;
+    }
 sql.query(query, (err, res) => {
 if (err) {
 result(null, err);
@@ -85,10 +88,30 @@ result({ kind: "not_found" }, null);
 });
 };
 
+Data.updatedefaultshow = (id, datas, result) => {
+    // console.log(datas);
+    sql.query(
+        "UPDATE shph SET defaultshow = 0",(err, res) => {
+    sql.query(
+    "UPDATE shph SET defaultshow = ? WHERE id = ?",
+    [1,id],(err, res) => {
+    if (err) {
+    result(null, err);
+    return;
+    }
+    if (res.affectedRows == 0) {
+    result({ kind: "not_found" }, null);
+    return;
+    };result(null, { id: id, ...datas });
+    }
+    );
+});
+    };
+
 Data.updateById = (id, datas, result) => {
 sql.query(
-"UPDATE shph SET name = ?, img_path = ? WHERE id = ?",
-[datas.name,datas.img_path,id],(err, res) => {
+"UPDATE shph SET fullname = ?,name = ?, img_path = ? WHERE id = ?",
+[datas.fullname,datas.name,datas.img_path,id],(err, res) => {
 if (err) {
 result(null, err);
 return;

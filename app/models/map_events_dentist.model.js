@@ -8,6 +8,7 @@ Data.create = (newData, result) => {
         date:newData.date,
                     shphId:newData.shphId,
                     eventId:newData.eventId,
+                    // eventId:JSON.stringify(newData.eventId),
                     doctorId:newData.doctorId,
                     userId:newData.userId,
                     createdBy:newData.createdBy,

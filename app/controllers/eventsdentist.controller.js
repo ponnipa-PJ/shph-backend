@@ -19,6 +19,23 @@ else res.send(data);
 });
 };
 
+exports.gettimebydoctoranddate = (req, res) => {
+    const date = req.query.date;
+    const id = req.query.id;
+    const userid = req.query.userid;
+    const shphId = req.query.shphId;
+    const type = req.query.type;
+    
+    Data.gettimebydoctoranddate(date,id,userid,shphId,type, (err, data) => {
+    if (err)
+    res.status(500).send({
+    message:
+    err.message || "Some error occurred while retrieving table."
+    });
+    else res.send(data);
+    });
+    };
+
 exports.book = (req, res) => {
     const name = req.query.name;
     const id = req.query.id;
